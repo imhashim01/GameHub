@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — Gamer Partner Finder</title>
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    .pf-page { padding-top: 65px; }
+    .pf-header {
+      padding: 4rem 0 3rem;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .pf-header::before {
+      content: '';
+      position: absolute;
+      top: -100px; left: 50%; transform: translateX(-50%);
+      width: 700px; height: 400px;
+      background: radial-gradient(ellipse, rgba(255,0,128,0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .pf-header h1 { font-size: clamp(2rem, 5vw, 3.2rem); letter-spacing: 4px; margin-bottom: 0.75rem; position: relative; z-index: 1; }
+    .pf-header p { position: relative; z-index: 1; max-width: 540px; margin: 0 auto; }
+
+    .pf-layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 2rem;
+      padding-bottom: 4rem;
+      align-items: start;
+    }
+
+    /* Search Panel */
+    .pf-form-panel { position: sticky; top: 85px; }
+    .pf-form-panel .glass-card { padding: 2rem; }
+    .pf-panel-title {
+      font-family: var(--font-display);
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--neon-pink);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .pf-panel-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255,0,128,0.2);
+    }
+
+    /* Results */
+    .pf-results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+    }
+    .pf-results-count {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      color: var(--text-dim);
+    }
+    .pf-results-count strong { color: var(--neon-pink); }
+    .partners-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 1.25rem;
+    }
+
+    /* Partner Card */
+    .partner-card { padding: 1.5rem; text-align: center; }
+    .partner-match-score {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 900;
+      line-height: 1;
+      margin-bottom: 0.25rem;
+    }
+    .partner-score-label {
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 0.75rem;
+    }
+    .partner-avatar { font-size: 2.5rem; margin-bottom: 0.5rem; line-height: 1; }
+    .partner-name {
+      font-family: var(--font-display);
+      font-size: 0.88rem;
+      letter-spacing: 1px;
+      color: var(--text-prime);
+      margin-bottom: 0.2rem;
+    }
+    .partner-online { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 1rem; }
+    .partner-info {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      line-height: 2;
+      text-align: left;
+    }
+    .partner-actions { display: flex; gap: 0.5rem; margin-top: 1rem; }
+
+    /* Intro State */
+    .pf-intro {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 400px;
+      text-align: center;
+      color: var(--text-muted);
+    }
+    .pf-intro .icon { font-size: 4rem; margin-bottom: 1.5rem; opacity: 0.4; }
+    .pf-intro h3 {
+      font-family: var(--font-display);
+      font-size: 0.9rem;
+      letter-spacing: 2px;
+      color: var(--text-prime);
+      margin-bottom: 0.5rem;
+    }
+    .pf-intro p { font-size: 0.9rem; max-width: 300px; margin: 0 auto; }
+
+    /* Stats bar */
+    .pf-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .pf-stat {
+      background: var(--bg-glass);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 1.25rem;
+      text-align: center;
+    }
+    .pf-stat-val {
+      font-family: var(--font-display);
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: var(--neon-pink);
+    }
+    .pf-stat-label { font-size: 0.72rem; color: var(--text-dim); letter-spacing: 1px; text-transform: uppercase; margin-top: 0.25rem; }
+
+    @media (max-width: 900px) {
+      .pf-layout { grid-template-columns: 1fr; }
+      .pf-form-panel { position: static; }
+    }
+    @media (max-width: 600px) {
+      .pf-stats { grid-template-columns: 1fr 1fr; }
+      .partners-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 400px) {
+      .partners-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-brand">GAME<span>HUB</span></a>
+  <ul class="nav-links" id="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="wishlist.html">Wishlist</a></li>
+    <li><a href="partner_finder.html" class="active">Find Partner</a></li>
+    <li><a href="compatibility_checker.html">PC Check</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="nav-actions" id="nav-actions">
+    <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Join Free</a>
+  </div>
+  <div class="hamburger" id="hamburger"><span></span><span></span><span></span></div>
+</nav>
+
+<div class="pf-page">
+  <div class="pf-header">
+    <div class="container">
+      <div class="section-title" style="color:var(--neon-pink)">🤝 Community Matchmaking</div>
+      <h1>Find Your Gaming<br><span style="color:var(--neon-pink);text-shadow:0 0 30px rgba(255,0,128,0.4)">Partner</span></h1>
+      <p>Tell us your play style and we'll match you with the most compatible gamers in the community.</p>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="pf-stats">
+      <div class="pf-stat">
+        <div class="pf-stat-val" data-count="12000" data-suffix="+">0+</div>
+        <div class="pf-stat-label">Gamers Online</div>
+      </div>
+      <div class="pf-stat">
+        <div class="pf-stat-val" data-count="5000" data-suffix="+">0+</div>
+        <div class="pf-stat-label">Matches Made</div>
+      </div>
+      <div class="pf-stat">
+        <div class="pf-stat-val" data-count="98" data-suffix="%">0%</div>
+        <div class="pf-stat-label">Satisfaction</div>
+      </div>
+    </div>
+
+    <div class="pf-layout">
+      <!-- Form Panel -->
+      <div class="pf-form-panel">
+        <div class="glass-card">
+          <div class="pf-panel-title">🎮 Your Profile</div>
+          <form id="partner-form">
+            <div class="form-group">
+              <label class="form-label">Favorite Game</label>
+              <input class="form-input" id="pf-game" type="text" placeholder="e.g. Cyber Odyssey 2049" autocomplete="off">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Play Style</label>
+              <select class="form-select" id="pf-style">
+                <option value="">Select your style</option>
+                <option value="casual">🎯 Casual — Just for fun</option>
+                <option value="competitive">🏆 Competitive — Ranked grinder</option>
+                <option value="cooperative">🤝 Co-op — Team player</option>
+                <option value="speedrun">⚡ Speedrun — Time optimizer</option>
+                <option value="roleplay">🎭 Roleplay — Story driven</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Gaming Hours</label>
+              <select class="form-select" id="pf-time">
+                <option value="">When do you play?</option>
+                <option value="mornings">☀️ Mornings</option>
+                <option value="afternoons">🌤️ Afternoons</option>
+                <option value="evenings">🌆 Evenings</option>
+                <option value="late night">🌙 Late Night</option>
+                <option value="weekends">📅 Weekends</option>
+                <option value="flexible">⏰ Flexible</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Preference</label>
+              <select class="form-select" id="pf-pref">
+                <option value="any">🌍 Any Game</option>
+                <option value="same-game">🎮 Same Game Only</option>
+                <option value="same-genre">🕹️ Same Genre</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary w-full btn-lg" style="background:linear-gradient(135deg,var(--neon-pink),#aa0055);box-shadow:0 0 30px rgba(255,0,128,0.3)">
+              🔍 Find My Match
+            </button>
+          </form>
+
+          <!-- Save Profile (for logged-in users) -->
+          <div id="save-profile-section" class="hidden" style="margin-top:1.25rem;padding-top:1.25rem;border-top:1px solid var(--border-subtle)">
+            <button class="btn btn-outline w-full" id="save-profile-btn" onclick="saveGamerProfile()">💾 Save Profile</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div>
+        <div id="partner-results">
+          <div class="pf-intro">
+            <div class="icon">🕹️</div>
+            <h3>Ready to Find Your Squad?</h3>
+            <p>Fill in your gaming preferences on the left and hit "Find My Match" to discover compatible gamers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script src="js/partnerFinder.js"></script>
+<script>
+  async function initPage() {
+    try {
+      const s = await apiGet('php/session_check.php');
+      const actions = document.getElementById('nav-actions');
+      if (s.logged_in) {
+        actions.innerHTML = `<a href="dashboard.html" class="btn btn-outline btn-sm">👤 ${s.username}</a>
+          <a href="php/logout.php?redirect=1" class="btn btn-primary btn-sm">Logout</a>`;
+        document.getElementById('save-profile-section')?.classList.remove('hidden');
+
+        // Load saved profile
+        const p = await apiGet('php/partner_match.php?action=get_profile');
+        if (p.success && p.profile) {
+          const prof = p.profile;
+          if (prof.favorite_game) document.getElementById('pf-game').value = prof.favorite_game;
+          if (prof.play_style)   document.getElementById('pf-style').value = prof.play_style;
+          if (prof.playing_time) document.getElementById('pf-time').value  = prof.playing_time;
+        }
+      }
+    } catch {}
+  }
+
+  async function saveGamerProfile() {
+    const btn = document.getElementById('save-profile-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving...';
+    try {
+      const data = await apiPost('php/partner_match.php', {
+        action: 'save_profile',
+        favorite_game: document.getElementById('pf-game').value,
+        play_style: document.getElementById('pf-style').value,
+        playing_time: document.getElementById('pf-time').value,
+      });
+      showToast(data.message || 'Profile saved!', data.success ? 'success' : 'error');
+    } catch {
+      showToast('Failed to save profile', 'error');
+    }
+    btn.disabled = false;
+    btn.textContent = '💾 Save Profile';
+  }
+
+  initPage();
+</script>
+</body>
+</html>

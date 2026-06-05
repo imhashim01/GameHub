@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — My Wishlist</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/games.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">GAME<span>HUB</span></a>
+  <button class="hamburger" onclick="this.classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="wishlist.html" class="active">Wishlist</a></li>
+    <li><a href="partner_finder.html">Find Partner</a></li>
+    <li><a href="compatibility_checker.html">PC Checker</a></li>
+  </ul>
+  <div class="nav-actions" id="nav-actions">
+    <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Join Free</a>
+  </div>
+</nav>
+
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">♥ MY WISHLIST</h1>
+    <p class="page-sub">Your saved games collection</p>
+  </div>
+</div>
+
+<!-- Auth gate -->
+<div id="auth-gate" style="display:none;text-align:center;padding:5rem 1rem">
+  <div style="font-size:3rem;margin-bottom:1rem">🔒</div>
+  <h2 style="font-family:var(--font-display);color:var(--neon-cyan);letter-spacing:2px;margin-bottom:1rem">LOGIN REQUIRED</h2>
+  <p style="color:var(--text-muted);margin-bottom:2rem">Sign in to view and manage your wishlist</p>
+  <a href="login.html" class="btn btn-primary">Sign In →</a>
+  <a href="register.html" class="btn btn-outline" style="margin-left:1rem">Create Account</a>
+</div>
+
+<main class="container" id="main-content" style="padding-top:1.5rem;padding-bottom:3rem;display:none">
+
+  <!-- Stats -->
+  <div class="wishlist-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:1rem;margin-bottom:2rem">
+    <div class="glass-card" style="padding:1.25rem;text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--neon-cyan);font-family:var(--font-display)" id="stat-total">0</div>
+      <div style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Saved Games</div>
+    </div>
+    <div class="glass-card" style="padding:1.25rem;text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--neon-purple);font-family:var(--font-display)" id="stat-avg">—</div>
+      <div style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Avg Rating</div>
+    </div>
+    <div class="glass-card" style="padding:1.25rem;text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--neon-pink);font-family:var(--font-display)" id="stat-genre">—</div>
+      <div style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Top Genre</div>
+    </div>
+    <div class="glass-card" style="padding:1.25rem;text-align:center">
+      <div style="font-size:2rem;font-weight:700;color:var(--neon-green);font-family:var(--font-display)" id="stat-trending">0</div>
+      <div style="font-size:.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px">Trending</div>
+    </div>
+  </div>
+
+  <!-- Search/Sort -->
+  <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;margin-bottom:1.5rem">
+    <div class="search-box" style="flex:1;min-width:200px">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" class="form-control" placeholder="Search wishlist..." oninput="filterWishlist()">
+    </div>
+    <select id="sort-select" class="form-control" style="min-width:150px" onchange="filterWishlist()">
+      <option value="added">Recently Added</option>
+      <option value="rating">Highest Rated</option>
+      <option value="title">A–Z</option>
+    </select>
+    <button class="btn btn-outline btn-sm" onclick="clearWishlist()">🗑 Clear All</button>
+  </div>
+
+  <div id="wishlist-grid" class="games-grid"></div>
+</main>
+
+<footer>
+  <div class="footer-logo">GAME<span style="color:var(--neon-purple)">HUB</span></div>
+  <p>© 2024 GameHub · Smart PC Game Discovery Platform</p>
+</footer>
+
+<div id="toast-container"></div>
+<script src="js/main.js"></script>
+<script src="js/wishlist.js"></script>
+<script>
+  const GENRES = { Action:'⚔️', RPG:'🧙', FPS:'🔫', Strategy:'♟️', Racing:'🏎️', Horror:'👻',
+    Adventure:'🗺️', Simulation:'🏗️', Fighting:'🥊', Puzzle:'🧩', 'Battle Royale':'🎯',
+    MOBA:'🏆', Stealth:'🕵️', Survival:'🌲' };
+
+  let wishlistData = [];
+
+  async function init() {
+    try {
+      const res  = await fetch('php/session_check.php');
+      const data = await res.json();
+      if (!data.logged_in) {
+        document.getElementById('auth-gate').style.display    = 'block';
+        document.getElementById('main-content').style.display = 'none';
+        return;
+      }
+      document.getElementById('nav-actions').innerHTML =
+        `<span style="color:var(--text-muted);font-size:.82rem">👾 ${data.username}</span>
+         <a href="dashboard.html" class="btn btn-outline btn-sm">Dashboard</a>
+         <a href="php/logout.php?redirect=1" class="btn btn-primary btn-sm">Logout</a>`;
+      document.getElementById('main-content').style.display = 'block';
+      loadWishlist();
+    } catch(e) {
+      document.getElementById('auth-gate').style.display = 'block';
+    }
+  }
+
+  async function loadWishlist() {
+    try {
+      const res  = await fetch('php/wishlist_process.php?action=get');
+      const data = await res.json();
+      wishlistData = data.wishlist || data.games || [];
+      renderWishlist(wishlistData);
+      updateStats(wishlistData);
+    } catch(e) {
+      wishlistData = [];
+      renderWishlist([]);
+    }
+  }
+
+  function renderWishlist(items) {
+    const grid = document.getElementById('wishlist-grid');
+    if (!items.length) {
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:4rem 1rem">
+        <div style="font-size:3rem">♥</div>
+        <p style="color:var(--text-muted);margin-top:1rem">Your wishlist is empty</p>
+        <a href="games.html" class="btn btn-primary" style="margin-top:1.5rem;display:inline-block">Browse Games →</a>
+      </div>`;
+      return;
+    }
+    grid.innerHTML = items.map(g => {
+      const icon  = GENRES[g.genre] || '🎮';
+      const stars = '★'.repeat(Math.round(g.rating||0));
+      return `<div class="game-card glass-card">
+        <div class="game-card-img">${icon}</div>
+        ${g.is_trending ? '<div class="game-badge-trending">🔥 HOT</div>' : ''}
+        <div class="game-card-body">
+          <h3 class="game-card-title">${g.title}</h3>
+          <div class="game-card-genre">${g.genre}</div>
+          <p class="game-card-desc">${(g.description||'').slice(0,80)}...</p>
+          <div class="game-card-footer">
+            <div class="rating-stars">${stars} <span>${g.rating||'—'}</span></div>
+            <span style="font-size:.72rem;color:var(--text-dim)">${g.added_at ? new Date(g.added_at).toLocaleDateString() : ''}</span>
+          </div>
+          <button class="btn btn-outline btn-sm btn-block" style="margin-top:.75rem;border-color:var(--neon-pink);color:var(--neon-pink)" onclick="removeFromWishlist(${g.id||g.game_id},'${g.title}')">✕ Remove</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function filterWishlist() {
+    const q    = document.getElementById('search-input').value.toLowerCase();
+    const sort = document.getElementById('sort-select').value;
+    let items  = wishlistData.filter(g => !q || g.title.toLowerCase().includes(q));
+    if (sort === 'rating') items.sort((a,b) => (b.rating||0)-(a.rating||0));
+    else if (sort === 'title') items.sort((a,b) => a.title.localeCompare(b.title));
+    renderWishlist(items);
+  }
+
+  function updateStats(items) {
+    document.getElementById('stat-total').textContent = items.length;
+    if (items.length) {
+      const avg = (items.reduce((s,g)=>s+(g.rating||0),0)/items.length).toFixed(1);
+      document.getElementById('stat-avg').textContent = '★'+avg;
+      const genreCounts = {};
+      items.forEach(g => genreCounts[g.genre] = (genreCounts[g.genre]||0)+1);
+      const topGenre = Object.entries(genreCounts).sort((a,b)=>b[1]-a[1])[0];
+      document.getElementById('stat-genre').textContent = topGenre ? topGenre[0].split(' ')[0] : '—';
+    }
+    document.getElementById('stat-trending').textContent = items.filter(g=>g.is_trending).length;
+  }
+
+  async function removeFromWishlist(gameId, title) {
+    try {
+      const res  = await fetch('php/wishlist_process.php', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'remove', game_id: gameId})
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast('Removed "'+title+'" from wishlist', 'info');
+        wishlistData = wishlistData.filter(g=>(g.id||g.game_id)!==gameId);
+        renderWishlist(wishlistData); updateStats(wishlistData);
+      } else { showToast(data.message||'Error removing game', 'error'); }
+    } catch(e) { showToast('Server error', 'error'); }
+  }
+
+  async function clearWishlist() {
+    if (!confirm('Clear your entire wishlist?')) return;
+    try {
+      const res = await fetch('php/wishlist_process.php', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({action:'clear'})
+      });
+      const data = await res.json();
+      if (data.success) { wishlistData=[]; renderWishlist([]); updateStats([]); showToast('Wishlist cleared','info'); }
+    } catch(e) { showToast('Server error','error'); }
+  }
+
+  init();
+</script>
+
+<style>
+  .game-card { position:relative; transition:var(--transition); }
+  .game-card:hover { transform:translateY(-4px); border-color:var(--neon-cyan); }
+  .game-card-img { height:140px; display:flex; align-items:center; justify-content:center; font-size:3.5rem; background:var(--bg-glass); border-radius:10px 10px 0 0; position:relative; }
+  .game-card-body { padding:1rem; }
+  .game-card-title { font-family:var(--font-display); font-size:.82rem; color:var(--text-prime); letter-spacing:1px; margin-bottom:.3rem; }
+  .game-card-genre { font-size:.72rem; color:var(--neon-cyan); text-transform:uppercase; letter-spacing:1px; margin-bottom:.4rem; }
+  .game-card-desc { font-size:.78rem; color:var(--text-muted); line-height:1.5; }
+  .game-card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:.6rem; }
+  .rating-stars { font-size:.8rem; color:var(--neon-gold); }
+  .rating-stars span { color:var(--text-muted); margin-left:.25rem; }
+  .game-badge-trending { position:absolute; top:.5rem; right:.5rem; z-index:2; background:rgba(255,0,106,.15); border:1px solid var(--neon-pink); color:var(--neon-pink); border-radius:12px; padding:.2rem .5rem; font-size:.7rem; font-weight:700; }
+</style>
+</body>
+</html>

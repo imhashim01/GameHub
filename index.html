@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — Enter the Game World</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/immersive.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="immersive-body">
+
+<!-- ── Navbar ───────────────────────────────────────────────── -->
+<nav class="imm-nav" id="imm-nav">
+  <a href="index.html" class="imm-brand">GAME<span>HUB</span></a>
+  <ul class="imm-nav-links">
+    <li><a href="index.html" class="active">Home</a></li>
+    <li><a href="games.html">Games</a></li>
+    <li><a href="wishlist.html">Wishlist</a></li>
+    <li><a href="partner_finder.html">Find Partner</a></li>
+    <li><a href="compatibility_checker.html">PC Check</a></li>
+    <li><a href="dashboard.html">Dashboard</a></li>
+  </ul>
+  <div class="imm-nav-actions" id="nav-actions">
+    <a href="login.html" class="imm-btn-ghost">Login</a>
+    <a href="register.html" class="imm-btn-primary">Join Free</a>
+  </div>
+  <button class="imm-hamburger" id="hamburger"><span></span><span></span><span></span></button>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════
+     HERO
+══════════════════════════════════════════════════════════ -->
+<section class="hero-cinematic" id="hero">
+  <canvas id="particleCanvas" class="particle-canvas"></canvas>
+  <div class="hero-bg-reel" id="heroReel">
+    <!-- slides injected by JS from real featured games -->
+    <div class="reel-slide active" style="background-image:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=1600&q=90')"></div>
+  </div>
+  <div class="hero-vignette"></div>
+  <div class="hero-scanlines"></div>
+
+  <div class="hero-tag tag-1">⚔️ RPG</div>
+  <div class="hero-tag tag-2">🔫 FPS</div>
+  <div class="hero-tag tag-3">🏎️ Racing</div>
+  <div class="hero-tag tag-4">👾 20 Games</div>
+  <div class="hero-tag tag-5">🌐 Multiplayer</div>
+
+  <div class="hero-center">
+    <div class="hero-pre-label">
+      <span class="pulse-dot"></span>
+      50,000+ GAMERS ONLINE NOW
+    </div>
+    <h1 class="hero-mega-title">
+      <span class="line-1" data-text="ENTER THE">ENTER THE</span>
+      <span class="line-2 glitch-text" data-text="GAME WORLD">GAME WORLD</span>
+    </h1>
+    <p class="hero-tagline">Discover. Compete. Connect. Your ultimate PC gaming universe awaits.</p>
+    <div class="hero-actions">
+      <a href="games.html" class="cta-primary">
+        <span class="cta-icon">▶</span>
+        START PLAYING
+        <div class="cta-shine"></div>
+      </a>
+      <a href="register.html" class="cta-secondary">CREATE ACCOUNT</a>
+    </div>
+    <div class="hero-live-bar">
+      <div class="live-stat"><span class="live-num" data-target="2847">0</span><span class="live-label">Playing Now</span></div>
+      <div class="live-divider"></div>
+      <div class="live-stat"><span class="live-num" data-target="20">0</span><span class="live-label">Games Listed</span></div>
+      <div class="live-divider"></div>
+      <div class="live-stat"><span class="live-num" data-target="99">0</span><span class="live-label">% Uptime</span></div>
+    </div>
+  </div>
+
+  <div class="reel-indicators" id="reelIndicators">
+    <button class="reel-dot active" data-slide="0"></button>
+  </div>
+
+  <div class="scroll-hint">
+    <span>SCROLL TO EXPLORE</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURED — loads from is_trending games
+══════════════════════════════════════════════════════════ -->
+<section class="section-dark">
+  <div class="imm-container">
+    <div class="section-eyebrow">🏆 EDITOR'S CHOICE</div>
+    <h2 class="section-title-imm">Featured <span class="neon-word">Games</span></h2>
+
+    <!-- Skeleton shown while loading -->
+    <div class="spotlight-grid" id="featuredSection">
+      <div class="skeleton-big"></div>
+      <div class="spotlight-sides">
+        <div class="skeleton-side"></div>
+        <div class="skeleton-side"></div>
+        <div class="skeleton-side"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     TRENDING
+══════════════════════════════════════════════════════════ -->
+<section class="section-darker">
+  <div class="imm-container">
+    <div class="section-header-row">
+      <div>
+        <div class="section-eyebrow">🔥 THIS WEEK</div>
+        <h2 class="section-title-imm">Trending <span class="neon-word">Right Now</span></h2>
+      </div>
+      <a href="games.html" class="see-all-btn">SEE ALL →</a>
+    </div>
+    <div class="trending-scroller">
+      <div class="trend-track" id="trendTrack">
+        <!-- Skeletons -->
+        <div class="trend-skeleton"></div><div class="trend-skeleton"></div>
+        <div class="trend-skeleton"></div><div class="trend-skeleton"></div>
+        <div class="trend-skeleton"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     GENRE GRID — static (based on DB categories)
+══════════════════════════════════════════════════════════ -->
+<section class="section-dark genre-section">
+  <div class="imm-container">
+    <div class="section-eyebrow">🎯 FIND YOUR STYLE</div>
+    <h2 class="section-title-imm">Browse by <span class="neon-word">Genre</span></h2>
+    <div class="genre-immersive-grid">
+      <a href="games.html?genre=RPG" class="genre-imm-card genre-big" style="--img:url('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80');--accent:#00d4ff">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">⚔️</div><div class="gi-name">RPG</div><div class="gi-count">Cyber Odyssey · Apex Dungeon</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=FPS" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=600&q=80');--accent:#ff0080">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">🔫</div><div class="gi-name">FPS</div><div class="gi-count">Phantom Strike</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=Battle Royale" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&q=80');--accent:#a855f7">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">🎯</div><div class="gi-name">Battle Royale</div><div class="gi-count">Storm Legends</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=Racing" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&q=80');--accent:#ffd700">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">🏎️</div><div class="gi-name">Racing</div><div class="gi-count">Neon Racer X · Velocity Rush</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=Strategy" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=600&q=80');--accent:#00ff88">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">♟️</div><div class="gi-name">Strategy</div><div class="gi-count">Galaxy Commanders · Fleet Commander</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=Horror" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=600&q=80');--accent:#ff6b00">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">👻</div><div class="gi-name">Horror</div><div class="gi-count">Cursed Hollow</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+      <a href="games.html?genre=Action" class="genre-imm-card" style="--img:url('https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&q=80');--accent:#ff0080">
+        <div class="gi-bg"></div><div class="gi-content"><div class="gi-icon">💥</div><div class="gi-name">Action</div><div class="gi-count">Desert Mirage · MechWar</div><div class="gi-arrow">EXPLORE →</div></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     NEW RELEASES — loads from newest games by release_date
+══════════════════════════════════════════════════════════ -->
+<section class="section-darker">
+  <div class="imm-container">
+    <div class="section-header-row">
+      <div>
+        <div class="section-eyebrow">🆕 JUST DROPPED</div>
+        <h2 class="section-title-imm">New <span class="neon-word">Releases</span></h2>
+      </div>
+      <a href="games.html" class="see-all-btn">SEE ALL →</a>
+    </div>
+    <div class="releases-magazine" id="newReleasesGrid">
+      <div class="rmag-skeleton"></div><div class="rmag-skeleton"></div>
+      <div class="rmag-skeleton"></div><div class="rmag-skeleton"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     SCREENSHOT GALLERY
+══════════════════════════════════════════════════════════ -->
+<section class="gallery-cinematic">
+  <div class="gallery-label">📸 IN-GAME SCREENSHOTS</div>
+  <div class="gallery-reel-wrap">
+    <div class="gallery-reel" id="galleryReel">
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=700&q=85" alt=""></div>
+      <div class="gallery-frame"><img src="https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=700&q=85" alt=""></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     FEATURES
+══════════════════════════════════════════════════════════ -->
+<section class="section-dark">
+  <div class="imm-container">
+    <div class="section-eyebrow text-center">WHY GAMEHUB?</div>
+    <h2 class="section-title-imm text-center">Your Gaming <span class="neon-word">Universe</span></h2>
+    <div class="features-imm-grid">
+      <a href="games.html" class="feat-imm-card" style="--fc:#00d4ff"><div class="feat-icon-wrap">🎯</div><h3>Smart Picks</h3><p>AI-powered recommendations based on your taste, specs, and play history.</p></a>
+      <a href="compatibility_checker.html" class="feat-imm-card" style="--fc:#00ff88"><div class="feat-icon-wrap">🖥️</div><h3>PC Compatibility</h3><p>Instant check — know exactly which games your rig can handle before you buy.</p></a>
+      <a href="partner_finder.html" class="feat-imm-card" style="--fc:#ff0080"><div class="feat-icon-wrap">🤝</div><h3>Find Your Squad</h3><p>Match with gamers who share your style, games, and schedule.</p></a>
+      <a href="wishlist.html" class="feat-imm-card" style="--fc:#ffd700"><div class="feat-icon-wrap">♥</div><h3>Wishlist</h3><p>Save titles, track deals, and never miss a game you've been waiting for.</p></a>
+      <a href="dashboard.html" class="feat-imm-card" style="--fc:#a855f7"><div class="feat-icon-wrap">📊</div><h3>Dashboard</h3><p>Your personal stats, activity, and community all in one command center.</p></a>
+      <a href="games.html" class="feat-imm-card" style="--fc:#ff6b00"><div class="feat-icon-wrap">⭐</div><h3>Real Reviews</h3><p>Community ratings and reviews — zero paid placements, 100% honest.</p></a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════════════════════
+     CTA
+══════════════════════════════════════════════════════════ -->
+<section class="cta-immersive">
+  <div class="cta-bg-img" style="background-image:url('https://images.unsplash.com/photo-1511512578047-dfb367046420?w=1400&q=80')"></div>
+  <div class="cta-overlay"></div>
+  <div class="cta-content">
+    <div class="cta-eyebrow">READY PLAYER ONE?</div>
+    <h2 class="cta-title">Join the <span>Ultimate</span><br>Gaming Universe</h2>
+    <p>50,000+ gamers already inside. Free forever. No credit card needed.</p>
+    <div class="cta-btns">
+      <a href="register.html" class="cta-primary">🚀 CREATE FREE ACCOUNT<div class="cta-shine"></div></a>
+      <a href="games.html" class="cta-secondary">BROWSE GAMES</a>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────────────── -->
+<footer class="imm-footer">
+  <div class="imm-container">
+    <div class="imm-footer-grid">
+      <div class="imm-footer-brand-col">
+        <div class="imm-footer-logo">GAME<span>HUB</span></div>
+        <p>Your intelligent platform for PC game discovery, compatibility checking, and connecting with the gaming community.</p>
+        <div class="imm-footer-socials"><span>🎮</span><span>💬</span><span>📺</span><span>🐦</span></div>
+      </div>
+      <div>
+        <div class="imm-footer-head">Explore</div>
+        <ul class="imm-footer-links">
+          <li><a href="games.html">All Games</a></li>
+          <li><a href="games.html">New Releases</a></li>
+          <li><a href="games.html">Top Rated</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="imm-footer-head">Tools</div>
+        <ul class="imm-footer-links">
+          <li><a href="compatibility_checker.html">PC Checker</a></li>
+          <li><a href="partner_finder.html">Find Partners</a></li>
+          <li><a href="wishlist.html">Wishlist</a></li>
+          <li><a href="dashboard.html">Dashboard</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="imm-footer-head">Account</div>
+        <ul class="imm-footer-links">
+          <li><a href="login.html">Login</a></li>
+          <li><a href="register.html">Register</a></li>
+          <li><a href="dashboard.html">My Profile</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="imm-footer-bottom">
+      <span>© 2024 GameHub — Built for Gamers</span>
+      <span style="font-family:var(--font-mono);font-size:.7rem;color:#3a5068">v2.0.0 · IMMERSIVE EDITION</span>
+    </div>
+  </div>
+</footer>
+
+<script src="js/main.js"></script>
+<script>
+/* ============================================================
+   IMAGE MAP — maps every game title to an Unsplash image
+   since image_url is empty in the DB seed data
+   ============================================================ */
+const GAME_IMAGES = {
+  'Cyber Odyssey 2049':     'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=85',
+  'Phantom Strike':         'https://images.unsplash.com/photo-1509198397868-475647b2a1e5?w=800&q=85',
+  'Galaxy Commanders':      'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800&q=85',
+  'Neon Racer X':           'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=85',
+  'Shadow Covenant':        'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=85',
+  'Abyss Survival':         'https://images.unsplash.com/photo-1598550476439-6847785fcea6?w=800&q=85',
+  'Iron Fist Championship': 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&q=85',
+  'Cursed Hollow':          'https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=800&q=85',
+  'World Architect':        'https://images.unsplash.com/photo-1563207153-f403bf289096?w=800&q=85',
+  'Puzzle Dimension':       'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&q=85',
+  'Storm Legends':          'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&q=85',
+  'Eternal Kingdoms':       'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=85',
+  'Desert Mirage':          'https://images.unsplash.com/photo-1537731121640-bc1c4aba9481?w=800&q=85',
+  'Arctic Expedition':      'https://images.unsplash.com/photo-1498036882173-b41c28a8ba34?w=800&q=85',
+  'VR Warriors':            'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=800&q=85',
+  'Apex Dungeon':           'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&q=85',
+  'MechWar: Uprising':      'https://images.unsplash.com/photo-1552820728-8b83bb6b773f?w=800&q=85',
+  'Fleet Commander':        'https://images.unsplash.com/photo-1564564321837-a57b7070ac4f?w=800&q=85',
+  'Velocity Rush':          'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&q=85',
+  'The Last Colony':        'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=85',
+};
+const GLOW_COLORS = ['#00d4ff','#ff0080','#a855f7','#ffd700','#00ff88','#ff6b00','#00d4ff','#ff0080'];
+
+function gameImg(game) {
+  return game.image_url || GAME_IMAGES[game.title] || 'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=85';
+}
+
+function starsHtml(rating) {
+  const r = Math.round(parseFloat(rating) || 0);
+  return '★'.repeat(r) + '☆'.repeat(5-r);
+}
+
+/* ── FEATURED SECTION ─────────────────────────────────────── */
+async function loadFeatured() {
+  try {
+    const data = await apiGet('php/recommendation.php?action=trending');
+    if (!data.success || !data.games?.length) return;
+    const games = data.games;
+    const main  = games[0];
+    const sides = games.slice(1, 4);
+
+    // Update hero reel with real game images
+    const reel = document.getElementById('heroReel');
+    const indicators = document.getElementById('reelIndicators');
+    reel.innerHTML = games.slice(0,4).map((g,i) =>
+      `<div class="reel-slide${i===0?' active':''}" style="background-image:url('${gameImg(g)}')"></div>`
+    ).join('');
+    indicators.innerHTML = games.slice(0,4).map((_,i) =>
+      `<button class="reel-dot${i===0?' active':''}" data-slide="${i}"></button>`
+    ).join('');
+    // Re-attach reel events
+    initReel();
+
+    // Build featured section
+    document.getElementById('featuredSection').innerHTML = `
+      <div class="spotlight-hero" onclick="location.href='games.html'">
+        <div class="spotlight-img-wrap">
+          <img src="${gameImg(main)}" alt="${main.title}">
+          <div class="spotlight-smoke"></div>
+        </div>
+        <div class="spotlight-overlay">
+          <div class="spotlight-badges">
+            <span class="badge-fire">🔥 HOT</span>
+            <span class="badge-genre">${main.genre.toUpperCase()}</span>
+          </div>
+          <h3 class="spotlight-name">${main.title}</h3>
+          <div class="spotlight-stars">${starsHtml(main.rating)} <span>${main.rating}</span> / 5</div>
+          <p class="spotlight-desc">${(main.description||'').slice(0,120)}…</p>
+          <div class="spotlight-meta">
+            <span>🎮 ${main.views ? Number(main.views).toLocaleString()+' views' : 'Trending'}</span>
+            <span>💾 ${main.min_storage || 40} GB</span>
+            <span>🖥️ ${main.min_ram || 8} GB RAM</span>
+          </div>
+          <button class="spotlight-cta">View Game →</button>
+        </div>
+      </div>
+      <div class="spotlight-sides">
+        ${sides.map(g => `
+          <div class="spotlight-mini" onclick="location.href='games.html'">
+            <img src="${gameImg(g)}" alt="${g.title}">
+            <div class="spotlight-mini-over">
+              <span class="mini-genre">${g.genre.toUpperCase()}</span>
+              <h4>${g.title}</h4>
+              <div class="mini-stars">${starsHtml(g.rating)} ${g.rating}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+  } catch(e) { console.error('Featured load failed', e); }
+}
+
+/* ── TRENDING STRIP ───────────────────────────────────────── */
+async function loadTrending() {
+  try {
+    const data = await apiGet('php/recommendation.php?action=trending');
+    if (!data.success || !data.games?.length) return;
+    document.getElementById('trendTrack').innerHTML = data.games.map((g, i) => `
+      <div class="trend-card" onclick="location.href='games.html'" style="--glow:${GLOW_COLORS[i%GLOW_COLORS.length]}">
+        <div class="trend-rank">#${i+1}</div>
+        <div class="trend-img"><img src="${gameImg(g)}" alt="${g.title}" loading="lazy"></div>
+        <div class="trend-glow"></div>
+        <div class="trend-info">
+          <span class="trend-genre-tag">${g.genre.toUpperCase()}</span>
+          <h4>${g.title}</h4>
+          <div class="trend-rating">★ ${g.rating} &nbsp;·&nbsp; ${g.views ? Number(g.views).toLocaleString()+' views' : 'Trending'}</div>
+        </div>
+      </div>`).join('');
+  } catch(e) { console.error('Trending load failed', e); }
+}
+
+/* ── NEW RELEASES ─────────────────────────────────────────── */
+async function loadNewReleases() {
+  try {
+    const data = await apiGet('php/recommendation.php?action=new_releases');
+    if (!data.success || !data.games?.length) return;
+    document.getElementById('newReleasesGrid').innerHTML = data.games.slice(0,4).map(g => `
+      <div class="release-mag-card" onclick="location.href='games.html'">
+        <div class="rmag-img"><img src="${gameImg(g)}" alt="${g.title}" loading="lazy"></div>
+        <div class="rmag-body">
+          <div class="rmag-tags">
+            <span class="new-flash">NEW</span>
+            <span class="rmag-genre">${g.genre.toUpperCase()}</span>
+          </div>
+          <h3 class="rmag-title">${g.title}</h3>
+          <p class="rmag-desc">${(g.description||'').slice(0,100)}…</p>
+          <div class="rmag-footer">
+            <span class="rmag-rating">★ ${g.rating}</span>
+            <span class="rmag-players">${g.release_date ? '📅 '+g.release_date : '🆕 Just Added'}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  } catch(e) { console.error('New releases load failed', e); }
+}
+
+/* ── HERO REEL ────────────────────────────────────────────── */
+let reelCur = 0;
+function initReel() {
+  const slides = document.querySelectorAll('.reel-slide');
+  const dots   = document.querySelectorAll('.reel-dot');
+  if (!slides.length) return;
+  reelCur = 0;
+  function goSlide(n) {
+    slides[reelCur].classList.remove('active');
+    dots[reelCur]?.classList.remove('active');
+    reelCur = n;
+    slides[reelCur].classList.add('active');
+    dots[reelCur]?.classList.add('active');
+  }
+  dots.forEach((d,i) => d.addEventListener('click', () => goSlide(i)));
+  clearInterval(window._reelTimer);
+  window._reelTimer = setInterval(() => goSlide((reelCur+1) % slides.length), 5000);
+}
+initReel();
+
+/* ── COUNTER ANIMATION ────────────────────────────────────── */
+const obs = new IntersectionObserver(entries => entries.forEach(e => {
+  if (!e.isIntersecting) return;
+  const el = e.target, target = +el.dataset.target;
+  let cur = 0, step = Math.ceil(target/60);
+  const t = setInterval(() => {
+    cur = Math.min(cur+step, target);
+    el.textContent = cur.toLocaleString() + (el.dataset.suffix||'');
+    if (cur >= target) clearInterval(t);
+  }, 25);
+  obs.unobserve(el);
+}), {threshold: 0.5});
+document.querySelectorAll('.live-num').forEach(el => obs.observe(el));
+
+/* ── PARTICLE CANVAS ──────────────────────────────────────── */
+const canvas = document.getElementById('particleCanvas');
+const ctx    = canvas.getContext('2d');
+let W, H, particles = [];
+function resizeCanvas() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+for (let i = 0; i < 80; i++) particles.push({
+  x: Math.random()*2000, y: Math.random()*1000,
+  r: Math.random()*1.5+0.3, vx: (Math.random()-.5)*0.3,
+  vy: -(Math.random()*0.5+0.1), o: Math.random()
+});
+(function drawP() {
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p => {
+    ctx.beginPath(); ctx.arc(p.x%W, p.y, p.r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(0,212,255,${p.o*0.6})`; ctx.fill();
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < 0) p.y = H;
+    if (p.x < 0) p.x = W;
+    if (p.x > W) p.x = 0;
+  });
+  requestAnimationFrame(drawP);
+})();
+
+/* ── GALLERY AUTO-SCROLL ──────────────────────────────────── */
+const reel2 = document.getElementById('galleryReel');
+let gPos = 0;
+setInterval(() => {
+  gPos += 1;
+  if (gPos >= reel2.scrollWidth - reel2.parentElement.offsetWidth) gPos = 0;
+  reel2.style.transform = `translateX(-${gPos}px)`;
+}, 20);
+
+/* ── NAVBAR SCROLL ────────────────────────────────────────── */
+window.addEventListener('scroll', () => {
+  document.getElementById('imm-nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+/* ── SESSION NAV ──────────────────────────────────────────── */
+async function updateNav() {
+  try {
+    const s = await apiGet('php/session_check.php');
+    const actions = document.getElementById('nav-actions');
+    if (s.logged_in) {
+      actions.innerHTML = s.role === 'admin'
+        ? `<a href="admin/admin_dashboard.php" class="imm-btn-ghost" style="color:var(--neon-pink)">⚙ Admin</a>
+           <a href="php/logout.php?redirect=1" class="imm-btn-primary">Logout</a>`
+        : `<a href="dashboard.html" class="imm-btn-ghost">👤 ${s.username}</a>
+           <a href="php/logout.php?redirect=1" class="imm-btn-primary">Logout</a>`;
+    }
+  } catch {}
+}
+
+/* ── Mobile Nav ───────────────────────────────────────────── */
+  const hamburger = document.getElementById('hamburger');
+  const navLinks  = document.querySelector('.imm-nav-links');
+  if (hamburger && navLinks) {
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    document.addEventListener('click', e => {
+      if (!hamburger.contains(e.target) && !navLinks.contains(e.target))
+        navLinks.classList.remove('open');
+    });
+  }
+
+
+loadFeatured();
+loadTrending();
+loadNewReleases();
+updateNav();
+</script>
+</body>
+</html>

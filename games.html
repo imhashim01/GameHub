@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — Browse Games</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/games.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">GAME<span>HUB</span></a>
+  <button class="hamburger" onclick="this.classList.toggle('open');document.querySelector('.nav-links').classList.toggle('open')">☰</button>
+  <ul class="nav-links">
+    <li><a href="index.html">Home</a></li>
+    <li><a href="games.html" class="active">Games</a></li>
+    <li><a href="wishlist.html">Wishlist</a></li>
+    <li><a href="partner_finder.html">Find Partner</a></li>
+    <li><a href="compatibility_checker.html">PC Checker</a></li>
+  </ul>
+  <div class="nav-actions" id="nav-actions">
+    <a href="login.html" class="btn btn-outline btn-sm">Login</a>
+    <a href="register.html" class="btn btn-primary btn-sm">Join Free</a>
+  </div>
+</nav>
+
+<!-- ── PAGE HEADER ── -->
+<div class="page-header">
+  <div class="container">
+    <h1 class="page-title">🎮 GAME LIBRARY</h1>
+    <p class="page-sub">Discover, explore, and add to your wishlist</p>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="container" style="padding-top:1.5rem;padding-bottom:3rem">
+
+  <!-- Filter Bar -->
+  <div class="filter-bar">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" class="form-control" placeholder="Search games...">
+    </div>
+
+    <select id="genre-filter" class="form-control filter-select">
+      <option value="">All Genres</option>
+      <option value="Action">⚔️ Action</option>
+      <option value="RPG">🧙 RPG</option>
+      <option value="FPS">🔫 FPS</option>
+      <option value="Strategy">♟️ Strategy</option>
+      <option value="Racing">🏎️ Racing</option>
+      <option value="Horror">👻 Horror</option>
+      <option value="Adventure">🗺️ Adventure</option>
+      <option value="Simulation">🏗️ Simulation</option>
+      <option value="Fighting">🥊 Fighting</option>
+      <option value="Puzzle">🧩 Puzzle</option>
+      <option value="Battle Royale">🎯 Battle Royale</option>
+      <option value="MOBA">🏆 MOBA</option>
+      <option value="Stealth">🕵️ Stealth</option>
+      <option value="Survival">🌲 Survival</option>
+    </select>
+
+    <select id="rating-filter" class="form-control filter-select">
+      <option value="">Any Rating</option>
+      <option value="4.5">★ 4.5+</option>
+      <option value="4.0">★ 4.0+</option>
+      <option value="3.5">★ 3.5+</option>
+    </select>
+
+    <div class="filter-btn">
+      <button class="btn btn-outline btn-sm" id="trending-filter">🔥 Trending</button>
+      <button class="btn btn-outline btn-sm" onclick="clearFilters()">✕ Clear</button>
+    </div>
+  </div>
+
+  <!-- Sort Pills -->
+  <div class="sort-pills" style="margin-bottom:1.5rem">
+    <button class="sort-pill active" data-sort="views">Most Popular</button>
+    <button class="sort-pill" data-sort="rating">Top Rated</button>
+    <button class="sort-pill" data-sort="release_date">Newest</button>
+    <button class="sort-pill" data-sort="title">A–Z</button>
+  </div>
+
+  <!-- Stats bar -->
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <span id="results-count" style="color:var(--text-muted);font-size:.85rem;font-family:var(--font-mono)">Loading games...</span>
+    <div style="display:flex;gap:.5rem">
+      <button class="btn btn-sm" id="view-grid" onclick="setView('grid')" title="Grid view" style="background:rgba(0,245,255,.1);border:1px solid var(--neon-cyan);color:var(--neon-cyan)">▦</button>
+      <button class="btn btn-sm" id="view-list" onclick="setView('list')" title="List view" style="background:transparent;border:1px solid var(--border-dim);color:var(--text-muted)">☰</button>
+    </div>
+  </div>
+
+  <!-- Games Grid -->
+  <div class="games-grid" id="games-grid"></div>
+
+  <!-- Pagination -->
+  <div id="pagination" class="pagination" style="margin-top:2rem"></div>
+
+</main>
+
+<!-- ── GAME DETAIL MODAL ── -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModal()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-logo">GAME<span style="color:var(--neon-purple)">HUB</span></div>
+  <p>© 2024 GameHub · Smart PC Game Discovery Platform</p>
+</footer>
+
+<div id="toast-container"></div>
+<script src="js/main.js"></script>
+<script src="js/wishlist.js"></script>
+<script>
+  /* ── State ── */
+  let allGames = [], filteredGames = [], currentSort = 'views', currentView = 'grid', trendingOnly = false;
+  const GENRES = { Action:'⚔️', RPG:'🧙', FPS:'🔫', Strategy:'♟️', Racing:'🏎️', Horror:'👻',
+    Adventure:'🗺️', Simulation:'🏗️', Fighting:'🥊', Puzzle:'🧩', 'Battle Royale':'🎯', MOBA:'🏆',
+    Stealth:'🕵️', Survival:'🌲' };
+
+  /* ── Fetch games ── */
+  async function loadGames() {
+    try {
+      // Fetch ALL pages so newly added games always appear
+      let page = 1, fetched = [];
+      while (true) {
+        const res  = await fetch(`php/recommendation.php?action=all_games&page=${page}&limit=100`);
+        const data = await res.json();
+        if (!data.success || !data.games || !data.games.length) break;
+        fetched = fetched.concat(data.games);
+        if (page >= (data.pages || 1)) break;
+        page++;
+      }
+      allGames = fetched;
+      applyFilters();
+    } catch(e) {
+      console.error('Failed to load games from server:', e);
+      const grid = document.getElementById('games-grid');
+      if (grid) grid.innerHTML = `
+        <div style="grid-column:1/-1;text-align:center;padding:4rem 1rem">
+          <div style="font-size:3rem">⚠️</div>
+          <p style="color:var(--neon-pink);margin-top:1rem;font-family:var(--font-display)">Could not connect to the game server</p>
+          <p style="color:var(--text-muted);font-size:.85rem;margin-top:.5rem">Check your XAMPP/WAMP is running and the database is set up correctly.</p>
+          <button class="btn btn-outline btn-sm" onclick="loadGames()" style="margin-top:1rem">Retry</button>
+        </div>`;
+      const rc = document.getElementById('results-count');
+      if (rc) rc.textContent = 'Server unavailable';
+    }
+  }
+
+  function applyFilters() {
+    const search = document.getElementById('search-input').value.toLowerCase();
+    const genre  = document.getElementById('genre-filter').value;
+    const minRating = parseFloat(document.getElementById('rating-filter').value) || 0;
+
+    filteredGames = allGames.filter(g =>
+      (!search || g.title.toLowerCase().includes(search) || g.genre.toLowerCase().includes(search)) &&
+      (!genre  || g.genre === genre) &&
+      (!minRating || g.rating >= minRating) &&
+      (!trendingOnly || g.is_trending)
+    );
+    sortGames();
+    renderGames();
+  }
+
+  function sortGames() {
+    filteredGames.sort((a,b) => {
+      if (currentSort === 'title')        return a.title.localeCompare(b.title);
+      if (currentSort === 'rating')       return b.rating - a.rating;
+      if (currentSort === 'release_date') return new Date(b.release_date||0) - new Date(a.release_date||0);
+      return (b.views||0) - (a.views||0);
+    });
+  }
+
+  function renderGames() {
+    const grid = document.getElementById('games-grid');
+    document.getElementById('results-count').textContent = `${filteredGames.length} game${filteredGames.length!==1?'s':''} found`;
+    grid.className = currentView === 'list' ? 'games-list' : 'games-grid';
+
+    if (!filteredGames.length) {
+      grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1;text-align:center;padding:4rem 1rem"><div style="font-size:3rem">🔍</div><p style="color:var(--text-muted);margin-top:1rem">No games match your filters</p><button class="btn btn-outline btn-sm" onclick="clearFilters()" style="margin-top:1rem">Clear Filters</button></div>';
+      return;
+    }
+
+    grid.innerHTML = filteredGames.map(g => {
+      const icon = GENRES[g.genre] || '🎮';
+      const stars = '★'.repeat(Math.round(g.rating)) + '☆'.repeat(5-Math.round(g.rating));
+      const views = g.views >= 1000 ? (g.views/1000).toFixed(0)+'K' : g.views;
+      if (currentView === 'list') {
+        return `<div class="game-list-item glass-card" onclick="openModal(${g.id})">
+          <div class="game-list-icon">${icon}</div>
+          <div class="game-list-info">
+            <h3>${g.title} ${g.is_trending?'<span class="badge-trending">🔥 HOT</span>':''}</h3>
+            <p>${g.description||''}</p>
+          </div>
+          <div class="game-list-meta">
+            <div class="rating-stars">${stars} <span>${g.rating}</span></div>
+            <span class="badge-genre">${g.genre}</span>
+            <button class="btn btn-outline btn-sm" onclick="event.stopPropagation();addToWishlist(${g.id},'${g.title}')">+ Wishlist</button>
+          </div>
+        </div>`;
+      }
+      return `<div class="game-card glass-card" onclick="openModal(${g.id})">
+        <div class="game-card-img">
+          ${g.image_url
+            ? `<img src="${g.image_url}" alt="${g.title}" style="width:100%;height:100%;object-fit:cover;border-radius:10px 10px 0 0;" onerror="this.parentElement.innerHTML='<span style=font-size:3rem>'+icon+'</span>'">`
+            : icon}
+        </div>
+        ${g.is_trending ? '<div class="game-badge-trending">🔥 HOT</div>' : ''}
+        <div class="game-card-body">
+          <h3 class="game-card-title">${g.title}</h3>
+          <div class="game-card-genre">${g.genre}</div>
+          <p class="game-card-desc">${(g.description||'').slice(0,90)}...</p>
+          <div class="game-card-footer">
+            <div class="rating-stars">${stars} <span>${g.rating}</span></div>
+            <span class="views-count">👁 ${views}</span>
+          </div>
+          <button class="btn btn-outline btn-sm btn-block" style="margin-top:.75rem" onclick="event.stopPropagation();addToWishlist(${g.id},'${g.title}')">♥ Add to Wishlist</button>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function openModal(id) {
+    // Navigate to full game detail page
+    window.location.href = 'game_detail.html?id=' + id;
+  }
+
+  function openModalOld(id) {
+    const g = allGames.find(x => x.id === id);
+    if (!g) return;
+    const icon = GENRES[g.genre] || '🎮';
+    document.getElementById('modal-body').innerHTML = `
+      <div class="modal-hero">${icon}</div>
+      <div class="modal-content-inner">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem">
+          <div>
+            <h2 style="font-family:var(--font-display);font-size:1.4rem;color:var(--neon-cyan);letter-spacing:2px">${g.title}</h2>
+            <span class="badge-genre" style="margin-top:.4rem">${g.genre}</span>
+            ${g.is_trending ? '<span class="badge-trending" style="margin-left:.5rem">🔥 TRENDING</span>' : ''}
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:1.8rem;font-weight:700;color:var(--neon-gold)">★ ${g.rating}</div>
+            <div style="font-size:.75rem;color:var(--text-muted)">RATING</div>
+          </div>
+        </div>
+        <p style="color:var(--text-muted);margin:1.25rem 0;line-height:1.7">${g.description||''}</p>
+        <div class="sys-req-grid">
+          <div class="sys-req-item"><span class="sys-label">RAM</span><span class="sys-val">${g.min_ram||8} GB</span></div>
+          <div class="sys-req-item"><span class="sys-label">GPU</span><span class="sys-val">${g.min_gpu||'N/A'}</span></div>
+          <div class="sys-req-item"><span class="sys-label">CPU</span><span class="sys-val">${g.min_cpu||'N/A'}</span></div>
+          <div class="sys-req-item"><span class="sys-label">STORAGE</span><span class="sys-val">${g.min_storage||0} GB</span></div>
+        </div>
+        <div style="margin-top:1.5rem;display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="addToWishlist(${g.id},'${g.title}');closeModal()">♥ Add to Wishlist</button>
+          <a href="compatibility_checker.html" class="btn btn-outline">🖥 Check Compatibility</a>
+        </div>
+      </div>`;
+    document.getElementById('modal-overlay').classList.add('active');
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('active'); }
+
+  function clearFilters() {
+    document.getElementById('search-input').value = '';
+    document.getElementById('genre-filter').value = '';
+    document.getElementById('rating-filter').value = '';
+    trendingOnly = false;
+    document.getElementById('trending-filter').classList.remove('active');
+    applyFilters();
+  }
+
+  function setView(v) {
+    currentView = v;
+    document.getElementById('view-grid').style.background = v==='grid' ? 'rgba(0,245,255,.1)' : 'transparent';
+    document.getElementById('view-list').style.background = v==='list' ? 'rgba(0,245,255,.1)' : 'transparent';
+    renderGames();
+  }
+
+  /* ── Sort pills ── */
+  document.querySelectorAll('.sort-pill').forEach(p => {
+    p.addEventListener('click', () => {
+      document.querySelectorAll('.sort-pill').forEach(x=>x.classList.remove('active'));
+      p.classList.add('active');
+      currentSort = p.dataset.sort;
+      sortGames(); renderGames();
+    });
+  });
+
+  /* ── Search/filter events ── */
+  document.getElementById('search-input').addEventListener('input', applyFilters);
+  document.getElementById('genre-filter').addEventListener('change', applyFilters);
+  document.getElementById('rating-filter').addEventListener('change', applyFilters);
+  document.getElementById('trending-filter').addEventListener('click', function() {
+    trendingOnly = !trendingOnly;
+    this.classList.toggle('active', trendingOnly);
+    applyFilters();
+  });
+
+  /* ── Session check ── */
+  fetch('php/session_check.php').then(r=>r.json()).then(d => {
+    if (d.logged_in) {
+      document.getElementById('nav-actions').innerHTML =
+        `<span style="color:var(--text-muted);font-size:.82rem">👾 ${d.username}</span>
+         <a href="dashboard.html" class="btn btn-outline btn-sm">Dashboard</a>
+         <a href="php/logout.php?redirect=1" class="btn btn-primary btn-sm">Logout</a>`;
+    }
+  }).catch(()=>{});
+
+  loadGames();
+
+  /* ── Global wishlist function (called by onclick buttons) ── */
+  function addToWishlist(gameId, title) {
+    WishlistModule.toggle(gameId, title);
+  }
+</script>
+
+<style>
+  .game-card { cursor:pointer; transition:var(--transition); }
+  .game-card:hover { transform:translateY(-4px); border-color:var(--neon-cyan); }
+  .game-card-img { height:160px; display:flex; align-items:center; justify-content:center; font-size:4rem; background:var(--bg-glass); border-radius:10px 10px 0 0; position:relative; overflow:hidden; }
+  .game-card-img::after { content:''; position:absolute; inset:0; background:linear-gradient(to bottom, transparent 60%, var(--bg-card)); }
+  .game-card-body { padding:1rem; }
+  .game-card-title { font-family:var(--font-display); font-size:.85rem; color:var(--text-prime); letter-spacing:1px; margin-bottom:.3rem; }
+  .game-card-genre { font-size:.72rem; color:var(--neon-cyan); text-transform:uppercase; letter-spacing:1px; margin-bottom:.5rem; }
+  .game-card-desc { font-size:.8rem; color:var(--text-muted); line-height:1.5; }
+  .game-card-footer { display:flex; justify-content:space-between; align-items:center; margin-top:.75rem; }
+  .rating-stars { font-size:.8rem; color:var(--neon-gold); }
+  .rating-stars span { color:var(--text-muted); margin-left:.25rem; }
+  .views-count { font-size:.75rem; color:var(--text-dim); }
+  .game-badge-trending { position:absolute; top:.5rem; right:.5rem; z-index:2; background:rgba(255,0,106,.15); border:1px solid var(--neon-pink); color:var(--neon-pink); border-radius:12px; padding:.2rem .5rem; font-size:.7rem; font-weight:700; }
+  .badge-genre { padding:.2rem .6rem; background:rgba(180,0,255,.1); border:1px solid rgba(180,0,255,.3); border-radius:12px; color:var(--neon-purple); font-size:.72rem; font-weight:600; }
+  .badge-trending { padding:.2rem .6rem; background:rgba(255,0,106,.1); border:1px solid rgba(255,0,106,.3); border-radius:12px; color:var(--neon-pink); font-size:.72rem; font-weight:700; }
+  .game-list-item { display:flex; align-items:center; gap:1.25rem; padding:1rem 1.25rem; cursor:pointer; transition:var(--transition); margin-bottom:.5rem; }
+  .game-list-item:hover { border-color:var(--neon-cyan); }
+  .game-list-icon { font-size:2rem; width:50px; text-align:center; flex-shrink:0; }
+  .game-list-info { flex:1; }
+  .game-list-info h3 { font-family:var(--font-display); font-size:.85rem; color:var(--text-prime); margin-bottom:.25rem; }
+  .game-list-info p { font-size:.78rem; color:var(--text-muted); }
+  .game-list-meta { display:flex; flex-direction:column; align-items:flex-end; gap:.4rem; }
+  .sys-req-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-top:1rem; }
+  .sys-req-item { background:var(--bg-glass); border:1px solid var(--border-dim); border-radius:8px; padding:.6rem .9rem; }
+  .sys-label { display:block; font-size:.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; }
+  .sys-val { font-family:var(--font-mono); font-size:.82rem; color:var(--neon-cyan); }
+  .modal-hero { height:200px; display:flex; align-items:center; justify-content:center; font-size:6rem; background:var(--bg-glass); }
+  .modal-content-inner { padding:1.5rem; }
+  .sort-pill.active { background:rgba(0,245,255,.1); border-color:var(--neon-cyan); color:var(--neon-cyan); }
+  #trending-filter.active { background:rgba(255,0,106,.1); border-color:var(--neon-pink); color:var(--neon-pink); }
+</style>
+</body>
+</html>

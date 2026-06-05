@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Game Detail — GameHub</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <style>
+  /* ══════════════ GAME DETAIL PAGE STYLES ══════════════ */
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+  body{
+    font-family:'Rajdhani',sans-serif;
+    background:#080b12;
+    color:#e8f4ff;
+    min-height:100vh;
+  }
+
+  /* Animated grid background */
+  body::before{
+    content:'';position:fixed;inset:0;
+    background:
+      linear-gradient(rgba(0,245,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,245,255,.025) 1px,transparent 1px);
+    background-size:40px 40px;
+    z-index:0;pointer-events:none;
+  }
+
+  /* Neon orbs */
+  .orb{position:fixed;border-radius:50%;filter:blur(80px);opacity:.18;pointer-events:none;z-index:0;}
+  .orb-a{width:500px;height:500px;background:#00f5ff;top:-120px;right:-100px;}
+  .orb-b{width:400px;height:400px;background:#bf00ff;bottom:-80px;left:-80px;}
+
+  /* ── Navbar ────────────────────────────────────── */
+  .navbar{
+    position:sticky;top:0;z-index:100;
+    background:rgba(8,11,18,.92);
+    border-bottom:1px solid rgba(0,245,255,.1);
+    backdrop-filter:blur(14px);
+    padding:.9rem 2rem;
+    display:flex;align-items:center;justify-content:space-between;
+  }
+  .nav-logo{font-family:'Orbitron',monospace;font-size:1.1rem;font-weight:900;
+    background:linear-gradient(135deg,#00f5ff,#bf00ff);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    text-decoration:none;letter-spacing:2px;}
+  .nav-back{display:flex;align-items:center;gap:.5rem;color:#8ba3c0;
+    text-decoration:none;font-size:.85rem;font-weight:600;transition:color .2s;}
+  .nav-back:hover{color:#00f5ff;}
+
+  /* ── Hero Banner ───────────────────────────────── */
+  .hero{
+    position:relative;
+    height:92vh;
+    min-height:520px;
+    overflow:hidden;
+    z-index:1;
+  }
+  .hero-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center top;
+    display:block !important;
+  }
+  .hero-placeholder{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    display:flex;align-items:center;justify-content:center;
+    font-size:10rem;
+    background:linear-gradient(135deg,rgba(0,245,255,.08),rgba(191,0,255,.08));
+  }
+  .hero-overlay{
+    position:absolute;inset:0;
+    background:
+      linear-gradient(to right, rgba(8,11,18,0.55) 0%, transparent 50%, rgba(8,11,18,0.3) 100%),
+      linear-gradient(to bottom, rgba(8,11,18,0.2) 0%, transparent 30%, transparent 55%, rgba(8,11,18,1) 100%);
+  }
+  .hero-badges{
+    position:absolute;
+    top:1.75rem;left:1.75rem;
+    display:flex;gap:.6rem;
+    z-index:2;
+  }
+  /* Title pulled down into hero */
+  .hero-bottom-info{
+    position:absolute;
+    bottom:0; left:0; right:0;
+    padding:2.5rem 2rem 1.75rem;
+    z-index:2;
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:2rem;
+  }
+  .hero-bottom-title{
+    font-family:'Orbitron',monospace;
+    font-size:clamp(1.6rem,4vw,3rem);
+    font-weight:900;
+    background:linear-gradient(135deg,#e8f4ff,#00f5ff);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1.1;
+    text-shadow:none;
+    margin-bottom:.5rem;
+  }
+  .hero-bottom-meta{
+    display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;
+    margin-top:.5rem;
+  }
+  .hero-rating-pill{
+    display:flex;align-items:center;gap:.4rem;
+    background:rgba(0,0,0,0.55);
+    border:1px solid rgba(255,215,0,0.4);
+    backdrop-filter:blur(8px);
+    border-radius:20px;
+    padding:.3rem .9rem;
+    font-family:'Orbitron',monospace;
+    font-size:.9rem;
+    color:#ffd700;
+    font-weight:700;
+  }
+  .hero-genre-pill{
+    background:rgba(0,245,255,0.12);
+    border:1px solid rgba(0,245,255,0.35);
+    backdrop-filter:blur(8px);
+    border-radius:20px;
+    padding:.3rem .9rem;
+    font-size:.78rem;
+    color:#00f5ff;
+    font-weight:600;
+  }
+  .hero-wishlist-btn{
+    flex-shrink:0;
+    display:inline-flex;align-items:center;gap:.5rem;
+    padding:.75rem 1.5rem;
+    border-radius:10px;
+    background:rgba(255,0,144,.12);
+    border:1px solid rgba(255,0,144,.4);
+    color:#ff0090;
+    font-family:'Rajdhani',sans-serif;
+    font-weight:700;font-size:.9rem;
+    cursor:pointer;transition:all .25s;
+    backdrop-filter:blur(8px);
+    white-space:nowrap;
+  }
+  .hero-wishlist-btn:hover{background:rgba(255,0,144,.28);transform:translateY(-1px);}
+  .hero-wishlist-btn.in-wishlist{background:rgba(255,0,144,.28);border-color:#ff0090;}
+  .badge{display:inline-flex;align-items:center;gap:.3rem;padding:.3rem .8rem;
+    border-radius:20px;font-size:.72rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+  .badge-trending{background:rgba(255,107,0,.25);color:#ff6b00;border:1px solid rgba(255,107,0,.4);}
+  .badge-genre{background:rgba(0,245,255,.15);color:#00f5ff;border:1px solid rgba(0,245,255,.3);}
+  .badge-free{background:rgba(57,255,20,.15);color:#39ff14;border:1px solid rgba(57,255,20,.3);}
+
+  /* ── Main Layout ───────────────────────────────── */
+  .page-wrap{
+    max-width:1100px;margin:0 auto;
+    padding:0 1.5rem 4rem;
+    position:relative;z-index:1;
+  }
+
+  .detail-grid{
+    display:grid;
+    grid-template-columns:1fr 320px;
+    gap:2rem;
+    margin-top:2rem;
+  }
+
+  /* ── Glass Card ────────────────────────────────── */
+  .glass-card{
+    background:rgba(10,14,24,.88);
+    border:1px solid rgba(0,245,255,.1);
+    border-radius:14px;
+    overflow:hidden;
+  }
+  .card-header{
+    padding:1.1rem 1.5rem;
+    border-bottom:1px solid rgba(0,245,255,.08);
+    font-family:'Orbitron',monospace;
+    font-size:.75rem;color:#00f5ff;
+    letter-spacing:2px;text-transform:uppercase;
+    display:flex;align-items:center;gap:.5rem;
+  }
+  .card-body{padding:1.5rem;}
+
+  /* ── Game Title Area ───────────────────────────── */
+  .game-title{
+    font-family:'Orbitron',monospace;
+    font-size:2rem;font-weight:900;
+    background:linear-gradient(135deg,#e8f4ff,#00f5ff);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    line-height:1.2;margin-bottom:.5rem;
+  }
+  .game-meta-row{
+    display:flex;align-items:center;gap:1rem;
+    flex-wrap:wrap;margin:.75rem 0 1.25rem;
+  }
+  .rating-big{
+    display:flex;align-items:center;gap:.4rem;
+    font-size:1.5rem;font-weight:700;color:#ffd700;
+    font-family:'Orbitron',monospace;
+  }
+  .rating-count{font-size:.75rem;color:#8ba3c0;}
+  .meta-chip{
+    padding:.25rem .7rem;border-radius:6px;font-size:.78rem;
+    background:rgba(0,245,255,.07);border:1px solid rgba(0,245,255,.12);
+    color:#8ba3c0;
+  }
+
+  /* ── Description ───────────────────────────────── */
+  .game-desc{
+    color:#8ba3c0;line-height:1.8;font-size:.95rem;margin-bottom:1.5rem;
+  }
+
+  /* ── System Requirements ───────────────────────── */
+  .req-tabs{display:flex;gap:.5rem;margin-bottom:1.25rem;}
+  .req-tab{
+    padding:.4rem 1.1rem;border-radius:8px;
+    border:1px solid rgba(0,245,255,.15);
+    background:transparent;color:#8ba3c0;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.85rem;
+    cursor:pointer;transition:all .2s;
+  }
+  .req-tab.active{
+    border-color:#00f5ff;color:#00f5ff;
+    background:rgba(0,245,255,.1);
+  }
+  .req-grid{
+    display:grid;grid-template-columns:1fr 1fr;gap:.85rem;
+  }
+  .req-item{
+    background:rgba(0,245,255,.04);
+    border:1px solid rgba(0,245,255,.08);
+    border-radius:10px;padding:1rem;
+    transition:border-color .2s;
+  }
+  .req-item:hover{border-color:rgba(0,245,255,.2);}
+  .req-label{
+    font-size:.68rem;color:#3a4f6a;
+    letter-spacing:2px;text-transform:uppercase;margin-bottom:.3rem;
+  }
+  .req-value{
+    font-size:.95rem;font-weight:700;color:#e8f4ff;
+  }
+  .req-icon{font-size:1.3rem;margin-bottom:.4rem;}
+
+  /* ── Reviews ───────────────────────────────────── */
+  .review-card{
+    background:rgba(0,245,255,.03);
+    border:1px solid rgba(0,245,255,.07);
+    border-radius:10px;padding:1rem 1.1rem;
+    margin-bottom:.85rem;
+  }
+  .review-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.4rem;}
+  .reviewer-name{font-weight:700;color:#e8f4ff;font-size:.9rem;}
+  .review-stars{color:#ffd700;font-size:.85rem;}
+  .review-date{font-size:.72rem;color:#3a4f6a;}
+  .review-text{color:#8ba3c0;font-size:.88rem;line-height:1.6;}
+
+  .review-form-wrap{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(0,245,255,.08);}
+  .stars-input{display:flex;gap:.3rem;margin:.5rem 0 1rem;flex-direction:row-reverse;justify-content:flex-end;}
+  .stars-input input{display:none;}
+  .stars-input label{font-size:1.8rem;cursor:pointer;color:#3a4f6a;transition:color .15s;}
+  .stars-input input:checked ~ label,
+  .stars-input label:hover,
+  .stars-input label:hover ~ label{color:#ffd700;}
+
+  .form-control{
+    width:100%;padding:.7rem 1rem;
+    background:rgba(0,245,255,.04);
+    border:1px solid rgba(0,245,255,.1);
+    border-radius:8px;color:#e8f4ff;
+    font-family:'Rajdhani',sans-serif;font-size:.9rem;
+    outline:none;transition:border-color .2s;
+    resize:vertical;
+  }
+  .form-control:focus{border-color:#00f5ff;box-shadow:0 0 0 3px rgba(0,245,255,.1);}
+
+  /* ── Sidebar ───────────────────────────────────── */
+  .sidebar-actions{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem;}
+
+  .btn{
+    display:inline-flex;align-items:center;justify-content:center;gap:.5rem;
+    padding:.7rem 1.4rem;border-radius:10px;
+    font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.9rem;
+    cursor:pointer;transition:all .25s;border:none;text-decoration:none;
+    width:100%;
+  }
+  .btn-primary{
+    background:linear-gradient(135deg,#00f5ff,rgba(0,245,255,.7));
+    color:#080b12;
+  }
+  .btn-primary:hover{box-shadow:0 0 25px rgba(0,245,255,.4);transform:translateY(-1px);}
+
+  .btn-wishlist{
+    background:rgba(255,0,144,.1);color:#ff0090;
+    border:1px solid rgba(255,0,144,.3);
+  }
+  .btn-wishlist:hover{background:rgba(255,0,144,.25);transform:translateY(-1px);}
+  .btn-wishlist.in-wishlist{background:rgba(255,0,144,.25);border-color:#ff0090;}
+
+  .btn-crack{
+    background:linear-gradient(135deg,rgba(57,255,20,.15),rgba(57,255,20,.05));
+    color:#39ff14;border:1px solid rgba(57,255,20,.35);
+    position:relative;overflow:hidden;
+  }
+  .btn-crack:hover{background:rgba(57,255,20,.2);box-shadow:0 0 20px rgba(57,255,20,.2);transform:translateY(-1px);}
+  .btn-crack::before{
+    content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(57,255,20,.15),transparent);
+    animation:shimmer 2.5s infinite;
+  }
+  @keyframes shimmer{to{left:100%}}
+
+  @keyframes pulse-dot {
+    0%,100% { opacity:1; box-shadow:0 0 4px #39ff14; }
+    50%      { opacity:.4; box-shadow:0 0 12px #39ff14; }
+  }
+
+  .btn-compat{
+    background:rgba(191,0,255,.1);color:#bf00ff;
+    border:1px solid rgba(191,0,255,.3);
+  }
+  .btn-compat:hover{background:rgba(191,0,255,.2);transform:translateY(-1px);}
+
+  .btn-outline{
+    background:transparent;color:#8ba3c0;
+    border:1px solid rgba(0,245,255,.15);
+  }
+  .btn-outline:hover{border-color:#00f5ff;color:#00f5ff;}
+
+  /* ── Info card ─────────────────────────────────── */
+  .info-row{
+    display:flex;justify-content:space-between;align-items:center;
+    padding:.65rem 0;border-bottom:1px solid rgba(0,245,255,.06);
+    font-size:.85rem;
+  }
+  .info-row:last-child{border-bottom:none;}
+  .info-label{color:#3a4f6a;text-transform:uppercase;font-size:.7rem;letter-spacing:1px;}
+  .info-value{color:#e8f4ff;font-weight:600;}
+
+  /* ── Crack warning box ─────────────────────────── */
+  .crack-warning{
+    background:rgba(255,107,0,.08);
+    border:1px solid rgba(255,107,0,.25);
+    border-radius:10px;padding:1rem;
+    font-size:.8rem;color:#ff9500;
+    line-height:1.6;margin-top:.75rem;
+  }
+
+  /* ── Compatibility bar ─────────────────────────── */
+  .compat-mini{margin-top:1rem;}
+  .compat-bar-wrap{background:rgba(0,245,255,.06);border-radius:20px;height:8px;overflow:hidden;margin:.4rem 0;}
+  .compat-bar-fill{height:100%;border-radius:20px;transition:width 1s ease;}
+
+  /* ── Loader ────────────────────────────────────── */
+  .loader-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1rem;}
+  .loader-ring{
+    width:48px;height:48px;
+    border:3px solid rgba(0,245,255,.1);
+    border-top-color:#00f5ff;
+    border-radius:50%;
+    animation:spin .7s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* ── Toast ─────────────────────────────────────── */
+  #toast-container{position:fixed;bottom:1.5rem;right:1.5rem;z-index:9999;display:flex;flex-direction:column;gap:.5rem;}
+  .toast{padding:.75rem 1.25rem;border-radius:10px;font-size:.85rem;font-weight:600;animation:toastin .3s ease;backdrop-filter:blur(12px);}
+  .toast.success{background:rgba(57,255,20,.15);border:1px solid rgba(57,255,20,.4);color:#39ff14;}
+  .toast.error{background:rgba(255,0,144,.15);border:1px solid rgba(255,0,144,.4);color:#ff0090;}
+  .toast.info{background:rgba(0,245,255,.12);border:1px solid rgba(0,245,255,.3);color:#00f5ff;}
+  @keyframes toastin{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+
+  /* ── Not found ─────────────────────────────────── */
+  .not-found{text-align:center;padding:6rem 1rem;}
+  .not-found .icon{font-size:4rem;margin-bottom:1rem;}
+  .not-found h2{font-family:'Orbitron',monospace;color:#00f5ff;margin-bottom:.75rem;}
+  .not-found p{color:#8ba3c0;margin-bottom:1.5rem;}
+
+  /* ── Responsive ────────────────────────────────── */
+  @media(max-width:768px){
+    .detail-grid{grid-template-columns:1fr;}
+    .req-grid{grid-template-columns:1fr;}
+    .hero{height:60vw;min-height:320px;}
+    .hero-bottom-title{font-size:1.3rem;}
+    .hero-bottom-info{flex-direction:column;align-items:flex-start;gap:1rem;}
+    .hero-wishlist-btn{align-self:stretch;justify-content:center;}
+  }
+  </style>
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<div class="orb orb-a"></div>
+<div class="orb orb-b"></div>
+
+<!-- ── Navbar ── -->
+<nav class="navbar">
+  <a href="index.html" class="nav-logo">⬡ GAMEHUB</a>
+  <a href="javascript:history.back()" class="nav-back">← Back to Games</a>
+</nav>
+
+<!-- ── Loading state ── -->
+<div id="loading-wrap" class="loader-wrap">
+  <div class="loader-ring"></div>
+  <p style="color:#8ba3c0;margin-top:1rem;font-family:'Orbitron',monospace;font-size:.8rem;letter-spacing:2px">LOADING GAME...</p>
+</div>
+
+<!-- ── Not found state ── -->
+<div id="not-found-wrap" class="not-found" style="display:none">
+  <div class="icon">🎮</div>
+  <h2>Game Not Found</h2>
+  <p>This game doesn't exist or was removed.</p>
+  <a href="games.html" class="btn btn-primary" style="width:auto;display:inline-flex">Browse All Games</a>
+</div>
+
+<!-- ── Main content (hidden until loaded) ── -->
+<div id="detail-wrap" style="display:none">
+
+  <!-- Hero Banner -->
+  <div class="hero" id="hero-section">
+    <div class="hero-placeholder" id="hero-placeholder">🎮</div>
+    <img id="hero-img" class="hero-img" src="" alt=""
+         onerror="this.style.display='none'"/>
+    <div class="hero-overlay"></div>
+    <div class="hero-badges" id="hero-badges"></div>
+
+    <!-- Title + meta pulled into bottom of hero -->
+    <div class="hero-bottom-info">
+      <div>
+        <div class="hero-bottom-title" id="game-title">—</div>
+        <div class="hero-bottom-meta" id="game-meta-row"></div>
+      </div>
+      <button class="hero-wishlist-btn" id="wishlist-btn" onclick="toggleWishlist()">
+        <span id="wishlist-icon">♥</span>
+        <span id="wishlist-label">Add to Wishlist</span>
+      </button>
+    </div>
+  </div>
+
+  <div class="page-wrap">
+    <div class="detail-grid">
+
+      <!-- ══ LEFT COLUMN ══ -->
+      <div>
+
+        <!-- Description -->
+        <div id="title-section" style="margin-bottom:1.5rem">
+          <p class="game-desc" id="game-desc"></p>
+        </div>
+
+        <!-- System Requirements -->
+        <div class="glass-card" style="margin-bottom:1.5rem">
+          <div class="card-header">🖥 System Requirements</div>
+          <div class="card-body">
+            <div class="req-tabs">
+              <button class="req-tab active" onclick="showReq('min',this)">Minimum</button>
+              <button class="req-tab" onclick="showReq('rec',this)">Recommended</button>
+            </div>
+            <div class="req-grid" id="req-grid-min"></div>
+            <div class="req-grid" id="req-grid-rec" style="display:none"></div>
+            <div style="margin-top:1.25rem">
+              <a id="compat-link" href="compatibility_checker.html" class="btn btn-compat" style="width:auto;display:inline-flex">
+                🖥 Check My PC Compatibility
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="glass-card">
+          <div class="card-header">⭐ Reviews & Ratings</div>
+          <div class="card-body">
+            <div id="reviews-wrap">
+              <div class="loader-wrap" style="padding:2rem"><div class="loader-ring"></div></div>
+            </div>
+
+            <!-- Write a review -->
+            <div class="review-form-wrap" id="review-form-wrap" style="display:none">
+              <div style="font-family:'Orbitron',monospace;font-size:.75rem;color:#00f5ff;letter-spacing:2px;margin-bottom:.75rem">WRITE A REVIEW</div>
+              <div class="stars-input" id="star-input">
+                <input type="radio" name="star" id="s5" value="5"><label for="s5">★</label>
+                <input type="radio" name="star" id="s4" value="4"><label for="s4">★</label>
+                <input type="radio" name="star" id="s3" value="3" checked><label for="s3">★</label>
+                <input type="radio" name="star" id="s2" value="2"><label for="s2">★</label>
+                <input type="radio" name="star" id="s1" value="1"><label for="s1">★</label>
+              </div>
+              <textarea class="form-control" id="review-text" rows="3"
+                placeholder="Share your experience with this game (min 10 characters)…"></textarea>
+              <button class="btn btn-primary" style="width:auto;margin-top:.75rem" onclick="submitReview()">
+                Submit Review
+              </button>
+            </div>
+            <div id="review-login-prompt" style="margin-top:1rem;font-size:.85rem;color:#8ba3c0;display:none">
+              <a href="login.html" style="color:#00f5ff">Log in</a> to write a review.
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /left -->
+
+      <!-- ══ RIGHT SIDEBAR ══ -->
+      <div>
+
+        <!-- Action buttons -->
+        <div class="glass-card" style="margin-bottom:1.25rem">
+          <div class="card-body">
+            <div class="sidebar-actions">
+
+              <!-- Cracked download link (shown only if admin set it) -->
+              <div id="crack-section" style="display:none">
+                <!-- Section label -->
+                <div style="display:flex;align-items:center;gap:.5rem;margin-bottom:.55rem;">
+                  <span style="display:inline-block;width:8px;height:8px;border-radius:50%;
+                               background:#39ff14;box-shadow:0 0 6px #39ff14;
+                               animation:pulse-dot 1.6s ease-in-out infinite;"></span>
+                  <span style="font-family:'Orbitron',monospace;font-size:.65rem;font-weight:700;
+                               color:#39ff14;letter-spacing:2px;text-transform:uppercase;">
+                    Cracked Version Available
+                  </span>
+                </div>
+
+                <a id="crack-link" href="#" target="_blank" rel="noopener noreferrer" class="btn btn-crack"
+                   style="flex-direction:column;gap:.15rem;padding:.85rem 1.4rem;">
+                  <span style="font-size:.95rem;font-weight:700;">⚡ Download Cracked Version</span>
+                  <span style="font-size:.7rem;font-weight:500;opacity:.7;letter-spacing:.5px;">
+                    Click to open download link ↗
+                  </span>
+                </a>
+
+                <div class="crack-warning">
+                  ⚠️ <strong>Disclaimer:</strong> This link is provided for informational purposes only.
+                  Support the developers by purchasing the official game.
+                  GameHub is not responsible for any third-party content.
+                </div>
+              </div>
+
+              <a href="compatibility_checker.html" class="btn btn-compat">🖥 Check PC Compatibility</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Game info -->
+        <div class="glass-card" style="margin-bottom:1.25rem">
+          <div class="card-header">ℹ️ Game Info</div>
+          <div class="card-body" id="game-info-rows"></div>
+        </div>
+
+        <!-- Mini compatibility check -->
+        <div class="glass-card">
+          <div class="card-header">⚡ Quick Specs</div>
+          <div class="card-body">
+            <div id="quick-specs"></div>
+          </div>
+        </div>
+
+      </div><!-- /sidebar -->
+    </div><!-- /detail-grid -->
+  </div><!-- /page-wrap -->
+</div><!-- /detail-wrap -->
+
+<div id="toast-container"></div>
+
+<script src="js/main.js"></script>
+<script src="js/wishlist.js"></script>
+<script>
+/* ══════════════════════════════════════════════════════
+   game_detail.html — Page Script
+   ══════════════════════════════════════════════════════ */
+
+let currentGame   = null;
+let isWishlisted  = false;
+let isLoggedIn    = false;
+const gameId      = new URLSearchParams(location.search).get('id');
+
+/* ── Boot ─────────────────────────────────────────── */
+(async () => {
+  if (!gameId || isNaN(gameId)) { showNotFound(); return; }
+
+  // Check session
+  try {
+    const s = await fetch('php/session_check.php').then(r => r.json());
+    isLoggedIn = !!s.logged_in;
+  } catch {}
+
+  await loadGame();
+  await loadReviews();
+  setupReviewForm();
+})();
+
+/* ── Load game data ───────────────────────────────── */
+async function loadGame() {
+  try {
+    const data = await fetch(`php/recommendation.php?action=game_detail&id=${gameId}`).then(r => r.json());
+    if (!data.success || !data.game) { showNotFound(); return; }
+    currentGame = data.game;
+    renderGame(data.game);
+    checkWishlistState();
+  } catch {
+    showNotFound();
+  }
+}
+
+/* ── Render everything ────────────────────────────── */
+function renderGame(g) {
+  document.title = `${g.title} — GameHub`;
+
+  // Hero image — full screen
+  const heroImg = document.getElementById('hero-img');
+  const heroPlaceholder = document.getElementById('hero-placeholder');
+  if (g.image_url) {
+    heroImg.src = g.image_url;
+    heroImg.alt = g.title;
+    heroImg.onload = () => { heroPlaceholder.style.display = 'none'; };
+  } else {
+    heroPlaceholder.textContent = getGenreEmoji(g.genre);
+  }
+
+  // Badges
+  const badges = [];
+  if (g.is_trending) badges.push(`<span class="badge badge-trending">🔥 TRENDING</span>`);
+  badges.push(`<span class="badge badge-genre">${g.genre}</span>`);
+  document.getElementById('hero-badges').innerHTML = badges.join('');
+
+  // Title inside hero
+  document.getElementById('game-title').textContent = g.title;
+
+  // Meta row inside hero
+  const stars = renderStars(g.rating);
+  const yr    = g.release_date ? g.release_date.slice(0,4) : '';
+  document.getElementById('game-meta-row').innerHTML = `
+    <div class="hero-rating-pill">${stars} ${parseFloat(g.rating||0).toFixed(1)}</div>
+    <span class="hero-genre-pill">${g.genre}</span>
+    ${yr ? `<span class="hero-genre-pill">📅 ${yr}</span>` : ''}
+    <span class="hero-genre-pill">💾 ${g.min_storage||0} GB</span>
+    <span class="hero-genre-pill">${g.review_count || 0} reviews</span>
+  `;
+
+  // Requirements — Minimum
+  document.getElementById('req-grid-min').innerHTML = buildReqGrid([
+    { icon:'🧠', label:'RAM',     value:(g.min_ram||8)+' GB' },
+    { icon:'🎨', label:'GPU',     value: g.min_gpu  || 'Any' },
+    { icon:'⚙️', label:'CPU',     value: g.min_cpu  || 'Any' },
+    { icon:'💾', label:'Storage', value:(g.min_storage||0)+' GB' },
+  ]);
+
+  // Requirements — Recommended (use rec_ fields or bump min by ~50%)
+  document.getElementById('req-grid-rec').innerHTML = buildReqGrid([
+    { icon:'🧠', label:'RAM',     value: (g.rec_ram     || Math.max((g.min_ram||8)*2, 16)) + ' GB' },
+    { icon:'🎨', label:'GPU',     value:  g.rec_gpu     || 'RTX 2070 or better' },
+    { icon:'⚙️', label:'CPU',     value:  g.rec_cpu     || 'Intel i7 / Ryzen 7' },
+    { icon:'💾', label:'Storage', value: (g.rec_storage || Math.ceil((g.min_storage||50)*1.5)) + ' GB (SSD)' },
+  ]);
+
+  // Game info sidebar
+  document.getElementById('game-info-rows').innerHTML = `
+    ${g.release_date ? infoRow('Release Date', formatDate(g.release_date)) : ''}
+    ${infoRow('Genre', g.genre)}
+    ${infoRow('Rating', `★ ${parseFloat(g.rating||0).toFixed(1)} / 5.0`)}
+    ${infoRow('Min RAM', (g.min_ram||8)+' GB')}
+    ${infoRow('Min Storage', (g.min_storage||0)+' GB')}
+    ${infoRow('Min GPU', g.min_gpu || 'N/A')}
+    ${infoRow('Min CPU', g.min_cpu || 'N/A')}
+  `;
+
+  // Quick specs visual
+  document.getElementById('quick-specs').innerHTML = `
+    ${specBar('RAM',     g.min_ram||8,  64,  '#00f5ff')}
+    ${specBar('Storage', g.min_storage||0, 200, '#bf00ff')}
+  `;
+
+  // Cracked link
+  if (g.cracked_link && g.cracked_link.trim()) {
+    const sec  = document.getElementById('crack-section');
+    const link = document.getElementById('crack-link');
+    link.href  = g.cracked_link.trim();
+    sec.style.display = '';
+  }
+
+  // Show page
+  document.getElementById('loading-wrap').style.display  = 'none';
+  document.getElementById('detail-wrap').style.display   = '';
+}
+
+/* ── Requirements grid builder ────────────────────── */
+function buildReqGrid(items) {
+  return items.map(i => `
+    <div class="req-item">
+      <div class="req-icon">${i.icon}</div>
+      <div class="req-label">${i.label}</div>
+      <div class="req-value">${i.value}</div>
+    </div>`).join('');
+}
+
+function showReq(type, btn) {
+  document.querySelectorAll('.req-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('req-grid-min').style.display = type === 'min' ? '' : 'none';
+  document.getElementById('req-grid-rec').style.display = type === 'rec' ? '' : 'none';
+}
+
+/* ── Spec bar ─────────────────────────────────────── */
+function specBar(label, value, max, color) {
+  const pct = Math.min(100, Math.round((value / max) * 100));
+  return `
+    <div style="margin-bottom:.75rem">
+      <div style="display:flex;justify-content:space-between;font-size:.78rem;margin-bottom:.3rem">
+        <span style="color:#8ba3c0">${label}</span>
+        <span style="color:#e8f4ff;font-weight:700">${value} GB</span>
+      </div>
+      <div class="compat-bar-wrap">
+        <div class="compat-bar-fill" style="width:${pct}%;background:${color}"></div>
+      </div>
+    </div>`;
+}
+
+/* ── Info row helper ──────────────────────────────── */
+function infoRow(label, value) {
+  return `
+    <div class="info-row">
+      <span class="info-label">${label}</span>
+      <span class="info-value">${value}</span>
+    </div>`;
+}
+
+/* ── Wishlist ─────────────────────────────────────── */
+function checkWishlistState() {
+  if (!currentGame) return;
+  const local = JSON.parse(localStorage.getItem('gamehub_wishlist') || '[]');
+  isWishlisted = local.some(g => g.id === parseInt(gameId));
+  updateWishlistBtn();
+}
+
+function updateWishlistBtn() {
+  const btn   = document.getElementById('wishlist-btn');
+  const icon  = document.getElementById('wishlist-icon');
+  const label = document.getElementById('wishlist-label');
+  if (isWishlisted) {
+    btn.classList.add('in-wishlist');
+    icon.textContent  = '♥';
+    label.textContent = 'In Wishlist ✓';
+  } else {
+    btn.classList.remove('in-wishlist');
+    icon.textContent  = '♥';
+    label.textContent = 'Add to Wishlist';
+  }
+}
+
+function toggleWishlist() {
+  if (!currentGame) return;
+  WishlistModule.toggle(currentGame.id, currentGame.title);
+  isWishlisted = !isWishlisted;
+  updateWishlistBtn();
+}
+
+/* ── Reviews ──────────────────────────────────────── */
+async function loadReviews() {
+  const wrap = document.getElementById('reviews-wrap');
+  try {
+    const data = await fetch(`php/review_process.php?action=list&game_id=${gameId}`).then(r => r.json());
+    if (!data.success || !data.reviews.length) {
+      wrap.innerHTML = `<div style="color:#3a4f6a;text-align:center;padding:2rem;font-size:.9rem">No reviews yet. Be the first! 🎮</div>`;
+      return;
+    }
+    wrap.innerHTML = data.reviews.map(r => `
+      <div class="review-card">
+        <div class="review-header">
+          <div>
+            <span class="reviewer-name">${r.username}</span>
+            <span class="review-stars" style="margin-left:.5rem">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</span>
+          </div>
+          <span class="review-date">${formatDate(r.created_at)}</span>
+        </div>
+        <div class="review-text">${r.comment || ''}</div>
+      </div>`).join('');
+  } catch {
+    wrap.innerHTML = `<div style="color:#8ba3c0;padding:1rem">Could not load reviews.</div>`;
+  }
+}
+
+function setupReviewForm() {
+  if (isLoggedIn) {
+    document.getElementById('review-form-wrap').style.display = '';
+  } else {
+    document.getElementById('review-login-prompt').style.display = '';
+  }
+}
+
+async function submitReview() {
+  const rating  = document.querySelector('input[name="star"]:checked')?.value || 3;
+  const comment = document.getElementById('review-text').value.trim();
+
+  if (comment.length < 10) { showToast('Review must be at least 10 characters.', 'error'); return; }
+
+  try {
+    const res  = await fetch('php/review_process.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action:'submit', game_id: parseInt(gameId), rating: parseInt(rating), comment }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      showToast('Review submitted! ⭐', 'success');
+      document.getElementById('review-text').value = '';
+      await loadReviews();
+    } else {
+      showToast(data.message || 'Failed to submit.', 'error');
+    }
+  } catch {
+    showToast('Server error. Is XAMPP running?', 'error');
+  }
+}
+
+/* ── Helpers ──────────────────────────────────────── */
+function renderStars(rating) {
+  const r = Math.round(parseFloat(rating) * 2) / 2;
+  let s = '';
+  for (let i = 1; i <= 5; i++) {
+    s += i <= r ? '★' : '☆';
+  }
+  return `<span style="color:#ffd700">${s}</span>`;
+}
+
+function getGenreEmoji(genre) {
+  const map = {
+    Action:'⚔️',RPG:'🧙',FPS:'🔫',Strategy:'♟️',Sports:'⚽',
+    Racing:'🏎️',Horror:'👻',Adventure:'🗺️',Simulation:'🏗️',
+    Fighting:'🥊',Puzzle:'🧩','Battle Royale':'🎯',MOBA:'🏆',
+    Stealth:'🕵️',Survival:'🌲',
+  };
+  return map[genre] || '🎮';
+}
+
+function formatDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return isNaN(d) ? str : d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function showNotFound() {
+  document.getElementById('loading-wrap').style.display  = 'none';
+  document.getElementById('not-found-wrap').style.display = '';
+}
+
+function showToast(msg, type = 'info') {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className   = `toast ${type}`;
+  t.textContent = msg;
+  c.appendChild(t);
+  setTimeout(() => { t.style.animation = 'toastin .3s ease reverse'; setTimeout(() => t.remove(), 300); }, 3500);
+}
+</script>
+</body>
+</html>

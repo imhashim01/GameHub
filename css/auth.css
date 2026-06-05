@@ -1,0 +1,580 @@
+/* ============================================================
+   GameHub — auth.css  |  Login & Register Page Styles
+   ============================================================ */
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Body ── */
+body {
+  min-height: 100vh;
+  background: var(--bg-void);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-body);
+  overflow-x: hidden;
+  padding: 1.5rem;
+}
+
+/* ============================================================
+   ANIMATED BACKGROUND
+   ============================================================ */
+.bg-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.bg-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  animation: grid-drift 25s linear infinite;
+}
+
+@keyframes grid-drift { to { transform: translateY(48px); } }
+
+.orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+
+.orb-a {
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1), transparent 70%);
+  top: -200px; right: -150px;
+  animation: orb-fa 12s ease-in-out infinite;
+}
+
+.orb-b {
+  width: 450px; height: 450px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.09), transparent 70%);
+  bottom: -150px; left: -100px;
+  animation: orb-fb 15s ease-in-out infinite;
+}
+
+.orb-c {
+  width: 300px; height: 300px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.06), transparent 70%);
+  top: 40%; left: 55%;
+  animation: orb-fc 9s ease-in-out infinite;
+}
+
+.orb-c-sm {
+  width: 250px; height: 250px;
+  background: radial-gradient(circle, rgba(0, 255, 136, 0.07), transparent 70%);
+  top: 35%; left: 15%;
+  animation: orb-fc 8s ease-in-out infinite;
+}
+
+@keyframes orb-fa { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-25px,25px)} }
+@keyframes orb-fb { 0%,100%{transform:translate(0,0)} 50%{transform:translate(25px,-20px)} }
+@keyframes orb-fc { 0%,100%{transform:scale(1)} 50%{transform:scale(1.15)} }
+
+/* ============================================================
+   WRAPPER & CARD
+   ============================================================ */
+.auth-wrapper {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 548px;
+}
+
+.auth-wrapper--narrow { max-width: 460px; }
+
+.auth-card {
+  background: rgba(8, 17, 30, 0.9);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 24px;
+  padding: 2.5rem 2.75rem;
+  position: relative;
+  overflow: hidden;
+  animation: card-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
+  box-shadow:
+    0 0 0 1px rgba(0, 212, 255, 0.13),
+    0 0 60px rgba(0, 212, 255, 0.05),
+    0 40px 80px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+@keyframes card-in {
+  from { opacity: 0; transform: translateY(36px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+
+.card-top-bar {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent 0%, var(--neon-cyan) 30%, var(--neon-purple) 70%, transparent 100%);
+  animation: bar-pulse 3s ease-in-out infinite;
+}
+
+@keyframes bar-pulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+.corner-tl, .corner-br {
+  position: absolute;
+  width: 50px; height: 50px;
+  pointer-events: none;
+}
+
+.corner-tl {
+  top: 0; left: 0;
+  border-top:  2px solid rgba(0, 212, 255, 0.35);
+  border-left: 2px solid rgba(0, 212, 255, 0.35);
+  border-radius: 24px 0 0 0;
+}
+
+.corner-br {
+  bottom: 0; right: 0;
+  border-bottom: 2px solid rgba(168, 85, 247, 0.35);
+  border-right:  2px solid rgba(168, 85, 247, 0.35);
+  border-radius: 0 0 24px 0;
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+.logo-area { text-align: center; margin-bottom: 1.75rem; }
+
+.logo-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px; height: 54px;
+  background: linear-gradient(135deg, rgba(0, 212, 255, 0.12), rgba(168, 85, 247, 0.12));
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 14px;
+  font-size: 1.5rem;
+  margin-bottom: 0.65rem;
+  box-shadow: 0 0 25px rgba(0, 212, 255, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.logo-text {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: var(--text-prime);
+  text-decoration: none;
+}
+
+.logo-text em { color: var(--neon-cyan); font-style: normal; }
+
+.logo-sub {
+  display: block;
+  font-size: 0.65rem;
+  letter-spacing: 3.5px;
+  color: rgba(107, 139, 164, 0.7);
+  text-transform: uppercase;
+  margin-top: 0.2rem;
+}
+
+/* ============================================================
+   HEADINGS
+   ============================================================ */
+.page-heading {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-align: center;
+  color: var(--text-prime);
+  margin-bottom: 0.3rem;
+}
+
+.page-desc {
+  font-size: 0.8rem;
+  text-align: center;
+  color: var(--text-muted);
+  margin-bottom: 1.75rem;
+  letter-spacing: 0.3px;
+}
+
+.page-desc b { color: rgba(0, 212, 255, 0.75); font-weight: 600; }
+
+/* ============================================================
+   ALERTS
+   ============================================================ */
+.msg-box {
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.84rem;
+  font-weight: 500;
+  margin-bottom: 1.2rem;
+  display: none;
+  align-items: center;
+  gap: 0.45rem;
+  letter-spacing: 0.2px;
+}
+
+.msg-box.visible { display: flex; }
+
+.msg-err {
+  background: rgba(255, 0, 100, 0.09);
+  border: 1px solid rgba(255, 0, 100, 0.28);
+  color: #ff6699;
+}
+
+.msg-ok {
+  background: rgba(0, 255, 136, 0.09);
+  border: 1px solid rgba(0, 255, 136, 0.28);
+  color: var(--neon-green);
+}
+
+/* ============================================================
+   FORM FIELDS
+   ============================================================ */
+.field { margin-bottom: 1rem; }
+
+.flabel {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: #4a6a84;
+  margin-bottom: 0.4rem;
+  transition: color 0.25s;
+}
+
+.field:focus-within .flabel { color: var(--neon-cyan); }
+
+.fhint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 0.3rem;
+  letter-spacing: 0.2px;
+}
+
+.label-opt {
+  color: var(--text-dim);
+  font-size: 0.62rem;
+  letter-spacing: 1px;
+  margin-left: 0.25rem;
+}
+
+/* Input wrapper */
+.finput-wrap { position: relative; }
+
+.finput {
+  width: 100%;
+  padding: 0.78rem 1rem;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  color: var(--text-prime);
+  font-family: var(--font-body);
+  font-size: 0.94rem;
+  font-weight: 500;
+  outline: none;
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+.finput:focus {
+  border-color: rgba(0, 212, 255, 0.45);
+  background: rgba(0, 212, 255, 0.03);
+  box-shadow: 0 0 0 3px rgba(0, 212, 255, 0.07);
+}
+
+.finput::placeholder { color: #253545; }
+.finput:not(:placeholder-shown):not(:focus) { border-color: rgba(0, 212, 255, 0.2); }
+
+.finput--pwd { padding-right: 2.75rem; }
+
+.eye-toggle {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  color: var(--text-dim);
+  padding: 0.15rem;
+  transition: color 0.2s;
+}
+
+.eye-toggle:hover { color: var(--neon-cyan); }
+
+/* ============================================================
+   PASSWORD STRENGTH
+   ============================================================ */
+.str-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 0.38rem;
+}
+
+.str-track {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.str-fill {
+  height: 100%;
+  width: 0;
+  border-radius: 3px;
+  transition: width 0.35s ease, background 0.35s ease;
+}
+
+.str-lbl {
+  font-size: 0.68rem;
+  min-width: 55px;
+  text-align: right;
+  color: var(--text-dim);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  transition: color 0.3s;
+}
+
+/* ============================================================
+   GENRE CHIPS
+   ============================================================ */
+.genre-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+  margin-top: 0.45rem;
+}
+
+.g-chip {
+  padding: 0.28rem 0.68rem;
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.02);
+  color: #344f63;
+  font-family: var(--font-body);
+  font-size: 0.74rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  letter-spacing: 0.2px;
+}
+
+.g-chip:hover {
+  border-color: rgba(0, 212, 255, 0.38);
+  color: var(--neon-cyan);
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.g-chip.on {
+  background: rgba(0, 212, 255, 0.1);
+  border-color: rgba(0, 212, 255, 0.55);
+  color: var(--neon-cyan);
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.12);
+}
+
+/* ============================================================
+   REMEMBER / FORGOT ROW
+   ============================================================ */
+.row-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.4rem;
+}
+
+.remember-lbl {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.remember-lbl input { accent-color: var(--neon-cyan); }
+
+.forgot-link {
+  font-size: 0.78rem;
+  color: var(--neon-cyan);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.forgot-link:hover {
+  color: var(--text-prime);
+  text-shadow: 0 0 8px rgba(0, 212, 255, 0.4);
+}
+
+/* ============================================================
+   CTA BUTTON
+   ============================================================ */
+.cta-btn {
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.88rem 1.5rem;
+  background: linear-gradient(110deg, var(--neon-cyan) 0%, #0095c8 45%, var(--neon-purple) 100%);
+  background-size: 200% 200%;
+  animation: btn-shift 4s ease infinite;
+  border: none;
+  border-radius: 12px;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #030810;
+  cursor: pointer;
+  transition: transform 0.25s, box-shadow 0.25s;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 28px rgba(0, 212, 255, 0.28), 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes btn-shift {
+  0%,100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+.cta-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.cta-btn:hover { transform: translateY(-2px); box-shadow: 0 0 45px rgba(0, 212, 255, 0.45), 0 8px 28px rgba(0, 0, 0, 0.5); }
+.cta-btn:hover::before { opacity: 1; }
+.cta-btn:active { transform: translateY(0); }
+.cta-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; animation: none; }
+
+/* ============================================================
+   DIVIDER
+   ============================================================ */
+.div-line {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin: 1.4rem 0;
+}
+
+.div-line::before,
+.div-line::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.07), transparent);
+}
+
+.div-line span {
+  font-size: 0.65rem;
+  letter-spacing: 2px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+/* ============================================================
+   AUTH FOOTER
+   ============================================================ */
+.auth-footer {
+  text-align: center;
+  font-size: 0.84rem;
+  color: var(--text-muted);
+}
+
+.auth-footer a {
+  color: var(--neon-cyan);
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.auth-footer a:hover {
+  color: var(--text-prime);
+  text-shadow: 0 0 10px rgba(0, 212, 255, 0.4);
+}
+
+/* ============================================================
+   TRUST STATS ROW (Register)
+   ============================================================ */
+.trust-row {
+  display: flex;
+  justify-content: center;
+  gap: 1.75rem;
+  margin-top: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.trust-item { text-align: center; }
+
+.trust-num {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 900;
+  color: var(--neon-cyan);
+}
+
+.trust-lbl {
+  font-size: 0.62rem;
+  letter-spacing: 1.5px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  margin-top: 0.1rem;
+}
+
+/* ============================================================
+   SECURE BADGES ROW (Login)
+   ============================================================ */
+.secure-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1.4rem;
+  flex-wrap: wrap;
+}
+
+.secure-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.8px;
+  color: var(--text-dim);
+  text-transform: uppercase;
+}
+
+.secure-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--neon-green);
+  box-shadow: 0 0 6px var(--neon-green);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   SCROLLBAR
+   ============================================================ */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: rgba(0, 212, 255, 0.25); border-radius: 4px; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 480px) {
+  .auth-card  { padding: 2rem 1.4rem; }
+  .trust-row  { gap: 1.2rem; }
+  .secure-row { gap: 1rem; }
+}

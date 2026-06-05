@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — My Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="dashboard-page">
+
+<!-- Ambient background -->
+<div class="dash-bg-grid"></div>
+<div class="dash-orb dash-orb-1"></div>
+<div class="dash-orb dash-orb-2"></div>
+
+<!-- ═══ TOP NAV ═══ -->
+<nav class="dash-nav">
+  <a class="dash-logo" href="index.html">GAME<span>HUB</span></a>
+  <div class="dash-nav-links">
+    <a href="games.html">🎮 Games</a>
+    <a href="wishlist.html">♥ Wishlist</a>
+    <a href="partner_finder.html">🤝 Partners</a>
+    <a href="compatibility_checker.html">🖥️ Compat</a>
+  </div>
+  <div class="dash-nav-right">
+    <div class="dash-user-pill" id="nav-user">
+      <span class="user-dot"></span>
+      <span id="nav-username">Loading…</span>
+      <button class="btn-logout-mini" onclick="logout()">⏻</button>
+    </div>
+  </div>
+</nav>
+
+<!-- ═══ MAIN LAYOUT ═══ -->
+<div class="dash-layout">
+
+  <!-- Left Sidebar -->
+  <aside class="dash-sidebar">
+    <div class="user-profile-card">
+      <div class="user-avatar" id="sidebar-avatar">👤</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebar-username">Gamer</div>
+        <div class="user-tag">🟢 Online</div>
+      </div>
+    </div>
+
+    <nav class="dash-sidenav">
+      <a class="dash-navitem active" onclick="switchTab('overview')">
+        <span>📊</span> Overview
+      </a>
+      <a class="dash-navitem" onclick="switchTab('partner-requests')" style="position:relative">
+        🤝 Partner Requests
+        <span class="partner-badge" style="display:none;position:absolute;top:6px;right:10px;
+              background:#ff0090;color:#fff;border-radius:50%;width:18px;height:18px;
+              font-size:.65rem;font-weight:700;display:flex;align-items:center;justify-content:center"></span>
+      </a>
+      <a class="dash-navitem" onclick="switchTab('recommendations')">
+        <span>🎯</span> For You
+      </a>
+      <a class="dash-navitem" onclick="switchTab('wishlist')">
+        <span>♥</span> Wishlist
+      </a>
+      <a class="dash-navitem" onclick="switchTab('activity')">
+        <span>⚡</span> Activity
+      </a>
+      <a class="dash-navitem" href="partner_finder.html">
+        <span>🤝</span> Find Partner
+      </a>
+    </nav>
+
+    <div class="gaming-stats-mini">
+      <div class="mini-stat">
+        <span class="mini-stat-val" id="stat-wishlist">–</span>
+        <span class="mini-stat-lbl">Wishlist</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-stat-val" id="stat-reviews">–</span>
+        <span class="mini-stat-lbl">Reviews</span>
+      </div>
+      <div class="mini-stat">
+        <span class="mini-stat-val" id="stat-genres">–</span>
+        <span class="mini-stat-lbl">Genres</span>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="dash-main">
+
+    <!-- OVERVIEW TAB -->
+    <section class="dash-tab active" id="tab-overview">
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-greeting" id="greeting">Welcome back, <span id="greeting-name">Gamer</span> 👾</h1>
+          <p class="dash-subtext">Your personalized gaming command center</p>
+        </div>
+        <div class="live-clock" id="live-clock"></div>
+      </div>
+
+      <!-- Quick Access Cards -->
+      <div class="quick-cards">
+        <a href="games.html" class="quick-card qc-cyan">
+          <div class="qc-icon">🎮</div>
+          <div class="qc-label">Browse Games</div>
+          <div class="qc-sub">Discover new titles</div>
+        </a>
+        <a href="wishlist.html" class="quick-card qc-pink">
+          <div class="qc-icon">♥</div>
+          <div class="qc-label">My Wishlist</div>
+          <div class="qc-sub" id="qc-wishlist-count">Loading…</div>
+        </a>
+        <a href="partner_finder.html" class="quick-card qc-purple">
+          <div class="qc-icon">🤝</div>
+          <div class="qc-label">Find Partner</div>
+          <div class="qc-sub">Match by play style</div>
+        </a>
+        <a href="compatibility_checker.html" class="quick-card qc-gold">
+          <div class="qc-icon">🖥️</div>
+          <div class="qc-label">PC Check</div>
+          <div class="qc-sub">Check compatibility</div>
+        </a>
+      </div>
+
+      <!-- Trending + Wishlist Preview -->
+      <div class="dash-grid-2">
+        <!-- Trending Games -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">🔥 Trending Now</h3>
+            <a href="games.html" class="panel-link">See All →</a>
+          </div>
+          <div id="trending-games" class="game-list">
+            <div class="dash-loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+
+        <!-- Wishlist Preview -->
+        <div class="glass-panel">
+          <div class="panel-header">
+            <h3 class="panel-title">♥ Saved Games</h3>
+            <a href="wishlist.html" class="panel-link">Full List →</a>
+          </div>
+          <div id="wishlist-preview" class="game-list">
+            <div class="dash-loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- RECOMMENDATIONS TAB -->
+    <section class="dash-tab" id="tab-recommendations">
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-greeting">🎯 Recommended For You</h1>
+          <p class="dash-subtext">Games curated based on your genre preferences</p>
+        </div>
+      </div>
+      <div id="recommendations-grid" class="rec-grid">
+        <div class="dash-loader"><div class="loader-ring"></div></div>
+      </div>
+    </section>
+
+    <!-- PARTNER REQUESTS TAB -->
+    <section class="dash-tab" id="tab-partner-requests">
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-greeting">🤝 Partner Requests</h1>
+          <p class="dash-subtext">Accept or reject gaming partner requests</p>
+        </div>
+        <a href="partner_finder.html" class="btn btn-primary">Find Partners</a>
+      </div>
+      <div id="partner-requests-list">
+        <div class="dash-loader"><div class="loader-ring"></div></div>
+      </div>
+    </section>
+
+    <!-- WISHLIST TAB -->
+    <section class="dash-tab" id="tab-wishlist">
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-greeting">♥ My Wishlist</h1>
+          <p class="dash-subtext">Games you want to play</p>
+        </div>
+        <a href="wishlist.html" class="btn btn-primary">Manage Wishlist</a>
+      </div>
+      <div id="wishlist-full" class="rec-grid">
+        <div class="dash-loader"><div class="loader-ring"></div></div>
+      </div>
+    </section>
+
+    <!-- ACTIVITY TAB -->
+    <section class="dash-tab" id="tab-activity">
+      <div class="dash-welcome">
+        <div>
+          <h1 class="dash-greeting">⚡ Gaming Activity</h1>
+          <p class="dash-subtext">Your recent interactions and stats</p>
+        </div>
+      </div>
+      <div class="activity-grid">
+        <div class="glass-panel">
+          <div class="panel-header"><h3 class="panel-title">📝 My Reviews</h3></div>
+          <div id="my-reviews">
+            <div class="dash-loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+        <div class="glass-panel">
+          <div class="panel-header"><h3 class="panel-title">🏷️ Favorite Genres</h3></div>
+          <div id="my-genres" style="padding:1.5rem"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div id="toast-container"></div>
+<script src="js/main.js"></script>
+<script>
+/* ══════════════════════════════════════════
+   GameHub User Dashboard JS
+   ══════════════════════════════════════════ */
+
+let currentUser = null;
+
+// ── Auth guard ────────────────────────────
+async function init() {
+  try {
+    const r = await fetch('php/session_check.php');
+    const d = await r.json();
+
+    if (!d.logged_in) {
+      window.location.href = 'login.html';
+      return;
+    }
+    if (d.role === 'admin') {
+      window.location.href = 'admin/admin_dashboard.php';
+      return;
+    }
+
+    currentUser = d;
+    setUserUI(d);
+    startClock();
+    loadOverview();
+  } catch {
+    window.location.href = 'login.html';
+  }
+}
+
+function setUserUI(u) {
+  document.getElementById('nav-username').textContent    = u.username;
+  document.getElementById('sidebar-username').textContent = u.username;
+  document.getElementById('greeting-name').textContent   = u.username;
+
+  // Avatar letter
+  const av = document.getElementById('sidebar-avatar');
+  av.textContent = '';
+  av.style.cssText = 'background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));font-size:1.4rem;display:flex;align-items:center;justify-content:center;';
+  av.textContent = u.username[0].toUpperCase();
+}
+
+// ── Tab navigation ────────────────────────
+function switchTab(name) {
+  document.querySelectorAll('.dash-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.dash-navitem').forEach(n => n.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  event.currentTarget.classList.add('active');
+
+  const loaders = {
+    recommendations:    loadRecommendations,
+    'partner-requests': () => loadPartnerRequests('partner-requests-list'),
+    wishlist: loadWishlistFull,
+    activity: loadActivity
+  };
+  if (loaders[name]) loaders[name]();
+}
+
+// ── Clock ─────────────────────────────────
+function startClock() {
+  const el = document.getElementById('live-clock');
+  const tick = () => {
+    const now = new Date();
+    el.innerHTML = `<div class="clock-time">${now.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'})}</div>
+                    <div class="clock-date">${now.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>`;
+  };
+  tick(); setInterval(tick, 1000);
+}
+
+// ── Overview ──────────────────────────────
+async function loadOverview() {
+  loadTrending();
+  loadWishlistPreview();
+  loadUserStats();
+}
+
+async function loadUserStats() {
+  try {
+    const [wl, rv] = await Promise.all([
+      fetch('php/wishlist_process.php?action=list').then(r=>r.json()),
+      fetch('php/review_process.php?action=my_reviews&user_id=me').then(r=>r.json())
+    ]);
+    document.getElementById('stat-wishlist').textContent = wl.success ? (wl.items?.length || 0) : '–';
+    document.getElementById('stat-reviews').textContent  = rv.success ? (rv.reviews?.length  || 0) : '–';
+    if (wl.success) {
+      document.getElementById('qc-wishlist-count').textContent = `${wl.items?.length || 0} games saved`;
+    }
+    // genres from user profile
+    if (currentUser) {
+      // Count from session — rough estimate
+      document.getElementById('stat-genres').textContent = '8+';
+    }
+  } catch {}
+}
+
+async function loadTrending() {
+  try {
+    const d = await fetch('php/recommendation.php?action=trending').then(r=>r.json());
+    const el = document.getElementById('trending-games');
+    if (!d.success || !d.games.length) {
+      el.innerHTML = '<p class="no-data">No trending games right now.</p>'; return;
+    }
+    el.innerHTML = d.games.slice(0,5).map(g => gameListItem(g)).join('');
+  } catch { document.getElementById('trending-games').innerHTML = '<p class="no-data">Failed to load.</p>'; }
+}
+
+async function loadWishlistPreview() {
+  try {
+    const d = await fetch('php/wishlist_process.php?action=list').then(r=>r.json());
+    const el = document.getElementById('wishlist-preview');
+    if (!d.success || !d.items?.length) {
+      el.innerHTML = '<p class="no-data">Your wishlist is empty. <a href="games.html">Browse games →</a></p>'; return;
+    }
+    el.innerHTML = d.wishlist.slice(0,5).map(g => gameListItem(g)).join('');
+  } catch {}
+}
+
+async function loadRecommendations() {
+  const el = document.getElementById('recommendations-grid');
+  try {
+    // Try personalised recommendations first
+    let d = await fetch('php/recommendation.php?action=recommendations').then(r=>r.json());
+
+    // If no personalised results, fall back to top-rated games
+    if (!d.success || !d.games?.length) {
+      d = await fetch('php/recommendation.php?action=all_games&page=1&limit=12').then(r=>r.json());
+    }
+
+    if (d.success && d.games?.length) {
+      el.innerHTML = d.games.map(g => gameCard(g)).join('');
+    } else {
+      el.innerHTML = '<p class="no-data" style="grid-column:1/-1">No games found. <a href="games.html" style="color:var(--neon-cyan)">Browse all games →</a></p>';
+    }
+  } catch {
+    el.innerHTML = '<p class="no-data" style="grid-column:1/-1">Could not load recommendations. Is XAMPP running?</p>';
+  }
+}
+
+async function loadWishlistFull() {
+  try {
+    const d = await fetch('php/wishlist_process.php?action=list').then(r=>r.json());
+    const el = document.getElementById('wishlist-full');
+    if (!d.success || !d.items?.length) {
+      el.innerHTML = '<p class="no-data" style="grid-column:1/-1">Wishlist is empty. <a href="games.html">Add some games →</a></p>'; return;
+    }
+    el.innerHTML = d.items.map(g => gameCard(g)).join('');
+  } catch {}
+}
+
+async function loadActivity() {
+  try {
+    const [rv] = await Promise.all([
+      fetch('php/review_process.php?action=my_reviews&user_id=me').then(r=>r.json())
+    ]);
+    const el = document.getElementById('my-reviews');
+    if (!rv.success || !rv.reviews?.length) {
+      el.innerHTML = '<p class="no-data" style="padding:1.5rem">No reviews yet.</p>';
+    } else {
+      el.innerHTML = rv.reviews.map(r => `
+        <div class="activity-row">
+          <div class="ar-left">
+            <div class="ar-game">${r.game_title || 'Unknown Game'}</div>
+            <div class="ar-comment">${(r.comment||'').slice(0,80)}${r.comment?.length>80?'…':''}</div>
+          </div>
+          <div class="ar-right">
+            <div class="ar-stars">${'★'.repeat(r.rating)}${'☆'.repeat(5-r.rating)}</div>
+            <div class="ar-date">${fmtDate(r.created_at)}</div>
+          </div>
+        </div>`).join('');
+    }
+
+    // Genres
+    const genreEl = document.getElementById('my-genres');
+    const genres = ['Action','RPG','FPS','Strategy','Racing','Horror','Sports','Adventure','Puzzle','Survival'];
+    genreEl.innerHTML = `<div class="genre-bubbles">${genres.map(g =>
+      `<span class="genre-bubble">${g}</span>`).join('')}</div>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:1rem">Update your preferences in your profile</p>`;
+  } catch {}
+}
+
+// ── UI Helpers ────────────────────────────
+function gameListItem(g) {
+  const img = g.image_url
+    ? `<img src="${g.image_url}" alt="${g.title}" onerror="this.style.display='none'">`
+    : `<div class="game-thumb-placeholder">🎮</div>`;
+  return `
+    <div class="game-list-item">
+      <div class="gli-thumb">${img}</div>
+      <div class="gli-info">
+        <div class="gli-title">${g.title}</div>
+        <div class="gli-meta"><span class="genre-tag">${g.genre}</span> ★ ${g.rating}</div>
+      </div>
+      ${g.is_trending ? '<span class="trending-badge">🔥</span>' : ''}
+    </div>`;
+}
+
+function gameCard(g) {
+  const img = g.image_url
+    ? `<img src="${g.image_url}" alt="${g.title}" class="gc-img" onerror="this.onerror=null;this.src='';this.closest('.gc-img-wrap').innerHTML='<div class=\'gc-img-placeholder\'>🎮</div>'">`
+    : `<div class="gc-img-placeholder">🎮</div>`;
+  return `
+    <div class="game-card-dash">
+      <div class="gc-img-wrap">${img}</div>
+      <div class="gc-body">
+        <div class="gc-title">${g.title}</div>
+        <div class="gc-meta">
+          <span class="genre-tag">${g.genre}</span>
+          <span class="rating-tag">★ ${g.rating}</span>
+        </div>
+      </div>
+    </div>`;
+}
+
+function fmtDate(str) {
+  if (!str) return '—';
+  const d = new Date(str);
+  return isNaN(d) ? str : d.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function logout() {
+  if(confirm('Sign out?')) window.location.href = 'php/logout.php';
+}
+
+init();
+
+function toggleDashSidebar() {
+  const sidebar = document.querySelector('.dash-sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) sidebar.classList.toggle('open');
+  if (overlay) overlay.classList.toggle('active');
+}
+</script>
+<!-- Mobile sidebar toggle -->
+<button class="dash-mobile-toggle" id="dashToggle" onclick="toggleDashSidebar()">☰</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleDashSidebar()"></div>
+
+<script src="js/partnerFinder.js"></script>
+</body>
+</html>

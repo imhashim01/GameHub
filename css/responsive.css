@@ -1,0 +1,383 @@
+/* ============================================================
+   responsive.css — GameHub Full Responsive Overrides
+   Breakpoints: 1100px | 900px | 768px | 600px | 480px | 380px
+   ============================================================ */
+
+/* ── Viewport safety ──────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; height: auto; }
+table { width: 100%; overflow-x: auto; display: block; }
+
+/* ══════════════════════════════════════════════════════════
+   GLOBAL NAV (immersive + classic)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .imm-nav { padding: 1rem 1.25rem; gap: 1rem; }
+  .imm-nav-links { display: none; }
+  .imm-hamburger { display: flex !important; flex-direction: column; gap: 5px; background: none; border: none; padding: .5rem; z-index: 10; }
+  .imm-hamburger span { width: 22px; height: 2px; background: #e8f4fd; border-radius: 2px; display: block; }
+  .imm-nav-links.open {
+    display: flex !important;
+    flex-direction: column;
+    position: fixed;
+    top: 60px; left: 0; right: 0;
+    background: rgba(2,4,8,0.98);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(0,212,255,0.15);
+    padding: 1rem 0;
+    z-index: 999;
+    gap: 0;
+  }
+  .imm-nav-links.open li a { padding: .85rem 1.5rem; display: block; font-size: .75rem; }
+  .imm-nav-actions { gap: .5rem; }
+  .imm-btn-ghost, .imm-btn-primary { padding: .4rem .9rem; font-size: .58rem; }
+}
+
+@media (max-width: 480px) {
+  .imm-nav-actions { display: none; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   INDEX / IMMERSIVE PAGE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  /* Hero */
+  .hero-cinematic { min-height: 100svh; }
+  .hero-tag { display: none; }
+  .hero-mega-title .line-1 { font-size: 2rem; }
+  .hero-mega-title .line-2 { font-size: 2.6rem; }
+  .hero-tagline { font-size: .9rem; }
+  .hero-live-bar { gap: 1rem; padding: .75rem 1rem; flex-wrap: wrap; justify-content: center; }
+  .live-num { font-size: 1.1rem; }
+  .hero-actions { flex-direction: column; align-items: center; }
+  .cta-primary, .cta-secondary { width: 100%; max-width: 320px; justify-content: center; }
+
+  /* Spotlight */
+  .spotlight-grid { grid-template-columns: 1fr; }
+  .spotlight-hero { min-height: 320px; }
+  .spotlight-sides { flex-direction: row; flex-wrap: wrap; }
+  .spotlight-mini { min-height: 160px; flex: 1 1 45%; }
+
+  /* Genre grid */
+  .genre-immersive-grid { grid-template-columns: 1fr 1fr; grid-template-rows: unset; }
+  .genre-imm-card.genre-big { grid-column: 1 / 3; min-height: 220px; }
+  .genre-imm-card { min-height: 160px; }
+
+  /* Trending */
+  .trend-card { flex: 0 0 180px; }
+
+  /* New releases */
+  .releases-magazine { grid-template-columns: 1fr 1fr; }
+
+  /* Features */
+  .features-imm-grid { grid-template-columns: 1fr 1fr; }
+
+  /* Footer */
+  .imm-footer-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
+  .imm-footer-brand-col { grid-column: 1 / 3; }
+}
+
+@media (max-width: 600px) {
+  .hero-mega-title .line-1 { font-size: 1.6rem; }
+  .hero-mega-title .line-2 { font-size: 2rem; }
+  .hero-center { padding: 0 1rem; }
+  .hero-live-bar { gap: .75rem; }
+  .live-divider { display: none; }
+
+  .spotlight-sides { flex-direction: column; }
+  .spotlight-mini { flex: 1 1 100%; min-height: 140px; }
+
+  .genre-immersive-grid { grid-template-columns: 1fr 1fr; }
+  .genre-imm-card.genre-big { grid-column: 1 / 3; }
+
+  .releases-magazine { grid-template-columns: 1fr; }
+  .features-imm-grid { grid-template-columns: 1fr; }
+
+  .cta-immersive { padding: 3rem 1rem; }
+  .cta-title { font-size: 1.8rem; }
+
+  .imm-footer-grid { grid-template-columns: 1fr; }
+  .imm-footer-brand-col { grid-column: auto; }
+  .imm-footer-bottom { flex-direction: column; gap: .5rem; text-align: center; }
+
+  .section-header-row { flex-direction: column; align-items: flex-start; gap: .5rem; }
+
+  .gallery-frame { width: 260px; height: 160px; }
+}
+
+@media (max-width: 380px) {
+  .genre-immersive-grid { grid-template-columns: 1fr; }
+  .genre-imm-card.genre-big { grid-column: auto; }
+  .hero-live-bar { flex-direction: column; align-items: center; gap: .5rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAMES PAGE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .games-layout { grid-template-columns: 1fr !important; }
+  .games-sidebar { display: none !important; }
+  .games-sidebar.open { display: block !important; position: fixed; inset: 0; z-index: 200; overflow-y: auto; padding: 1rem; background: rgba(2,4,8,0.98); }
+  .filter-toggle-btn { display: inline-flex !important; }
+  .games-grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important; }
+}
+
+@media (max-width: 600px) {
+  .games-toolbar { flex-direction: column; align-items: stretch; gap: .75rem; }
+  .games-toolbar input { width: 100%; }
+  .sort-select { width: 100%; }
+  .view-toggle { align-self: flex-end; }
+  .games-grid { grid-template-columns: 1fr 1fr !important; gap: .75rem; }
+  .game-card-img { height: 110px; }
+}
+
+@media (max-width: 380px) {
+  .games-grid { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAME DETAIL PAGE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .detail-grid { grid-template-columns: 1fr !important; }
+  .hero { height: 55vw !important; min-height: 280px !important; }
+  .hero-bottom-info { flex-direction: column; align-items: flex-start; gap: .75rem; padding: 1.5rem 1rem 1rem; }
+  .hero-bottom-title { font-size: 1.4rem !important; }
+  .hero-wishlist-btn { align-self: stretch; justify-content: center; }
+  .req-grid { grid-template-columns: 1fr 1fr !important; }
+}
+
+@media (max-width: 600px) {
+  .hero { height: 60vw !important; min-height: 240px !important; }
+  .hero-bottom-title { font-size: 1.1rem !important; }
+  .hero-bottom-meta { gap: .4rem; }
+  .hero-rating-pill, .hero-genre-pill { font-size: .68rem; padding: .25rem .6rem; }
+  .req-grid { grid-template-columns: 1fr !important; }
+  .page-wrap { padding: 0 .75rem 3rem !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   DASHBOARD PAGE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .dash-sidebar { width: 220px !important; }
+}
+
+@media (max-width: 900px) {
+  .dash-sidebar {
+    position: fixed !important;
+    left: 0; top: 0; bottom: 0;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform .3s;
+    width: 260px !important;
+  }
+  .dash-sidebar.open { transform: translateX(0) !important; }
+  .dash-main { margin-left: 0 !important; padding: 1rem !important; }
+  .dash-grid-2 { grid-template-columns: 1fr !important; }
+  .activity-grid { grid-template-columns: 1fr !important; }
+  .quick-cards { grid-template-columns: 1fr 1fr !important; }
+  .dash-mobile-toggle { display: flex !important; }
+}
+
+@media (max-width: 600px) {
+  .quick-cards { grid-template-columns: 1fr 1fr !important; }
+  .dash-main { padding: .75rem !important; }
+}
+
+@media (max-width: 480px) {
+  .quick-cards { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   LOGIN / REGISTER PAGES
+══════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .auth-layout { grid-template-columns: 1fr !important; }
+  .auth-hero { display: none !important; }
+  .auth-card { padding: 1.75rem 1.25rem !important; margin: 1rem !important; }
+  .auth-logo { font-size: 1.4rem; }
+  .trust-row { flex-wrap: wrap; justify-content: center; gap: 1rem; }
+  .secure-row { flex-wrap: wrap; justify-content: center; }
+}
+
+@media (max-width: 400px) {
+  .auth-card { padding: 1.5rem 1rem !important; }
+  .form-control { font-size: .9rem; padding: .6rem .85rem; }
+  .btn { padding: .65rem 1rem; font-size: .85rem; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   PARTNER FINDER
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .pf-layout { grid-template-columns: 1fr !important; }
+  .pf-form-panel { border-right: none !important; border-bottom: 1px solid rgba(0,212,255,.1); }
+}
+
+@media (max-width: 600px) {
+  .pf-stats { grid-template-columns: 1fr 1fr !important; }
+  .partners-grid { grid-template-columns: 1fr 1fr !important; }
+  .pf-header { padding: 2rem 1rem !important; }
+}
+
+@media (max-width: 400px) {
+  .partners-grid { grid-template-columns: 1fr !important; }
+  .pf-stats { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPATIBILITY CHECKER
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .compat-layout { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 600px) {
+  .spec-row { grid-template-columns: 1fr !important; }
+  .compat-results-table { font-size: .78rem; }
+  /* Results table — stack columns on tiny screens */
+  .compat-results-table thead { display: none; }
+  .compat-results-table tr { display: block; margin-bottom: 1rem; border: 1px solid rgba(0,212,255,.1); border-radius: 8px; padding: .5rem; }
+  .compat-results-table td { display: flex; justify-content: space-between; padding: .35rem .5rem; font-size: .8rem; }
+  .compat-results-table td::before { content: attr(data-label); color: #6b8ba4; font-weight: 600; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   WISHLIST PAGE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .wishlist-grid { grid-template-columns: repeat(auto-fill, minmax(160px,1fr)) !important; }
+  .wishlist-stats { grid-template-columns: 1fr 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .wishlist-grid { grid-template-columns: 1fr 1fr !important; }
+  .wishlist-stats { grid-template-columns: 1fr !important; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   ADMIN PAGES
+══════════════════════════════════════════════════════════ */
+@media (max-width: 900px) {
+  .admin-layout, .admin-wrap { grid-template-columns: 1fr !important; }
+  .sidebar, .admin-sidebar {
+    position: fixed !important;
+    left: 0; top: 0; bottom: 0;
+    z-index: 300;
+    transform: translateX(-100%);
+    transition: transform .3s;
+    width: 240px !important;
+    overflow-y: auto;
+  }
+  .sidebar.open, .admin-sidebar.open { transform: translateX(0) !important; }
+  .main, .admin-main { margin-left: 0 !important; padding: 1rem !important; }
+  .stats-grid { grid-template-columns: 1fr 1fr !important; }
+  .form-row { grid-template-columns: 1fr !important; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr !important; }
+  .admin-table thead { display: none; }
+  .admin-table tr { display: block; border: 1px solid rgba(0,212,255,.1); border-radius: 8px; margin-bottom: .75rem; padding: .5rem; }
+  .admin-table td { display: flex; justify-content: space-between; align-items: center; padding: .35rem .5rem; font-size: .8rem; border: none; }
+  .admin-table td::before { content: attr(data-label); color: #6b8ba4; font-weight: 600; flex: 0 0 40%; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   MODALS (games.html game modal)
+══════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  .modal-content { margin: .5rem; border-radius: 12px; max-height: 95vh; }
+  .modal-img { height: 180px !important; }
+  .modal-body { padding: 1rem !important; }
+  .modal-title { font-size: 1.1rem !important; }
+  .modal-actions { flex-direction: column; gap: .5rem; }
+  .modal-actions .btn { width: 100%; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   UTILITY — mobile-only show/hide helpers
+══════════════════════════════════════════════════════════ */
+.mobile-only { display: none !important; }
+@media (max-width: 768px) {
+  .mobile-only { display: block !important; }
+  .desktop-only { display: none !important; }
+}
+
+/* ── Dash mobile toggle button (injected by JS) ───────────── */
+.dash-mobile-toggle {
+  display: none;
+  position: fixed; top: 1rem; left: 1rem; z-index: 400;
+  background: rgba(0,212,255,0.12); border: 1px solid rgba(0,212,255,0.3);
+  color: #00d4ff; padding: .5rem .75rem; border-radius: 8px;
+  font-size: 1.1rem; cursor: pointer; backdrop-filter: blur(8px);
+}
+
+/* Overlay for open mobile sidebars */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 250;
+  background: rgba(0,0,0,0.6); backdrop-filter: blur(2px);
+}
+.sidebar-overlay.active { display: block; }
+
+/* ── Touch targets — min 44px ─────────────────────────────── */
+@media (max-width: 768px) {
+  .btn, button, a.btn, .nav-links a, .imm-nav-links a,
+  .req-tab, .reel-dot, .sort-select, select, .form-control {
+    min-height: 44px;
+  }
+  select, .form-control { font-size: 16px !important; } /* prevent iOS zoom */
+}
+
+/* ── Horizontal scroll containers — touch friendly ────────── */
+.trending-scroller, .screenshot-strip, .gallery-reel-wrap {
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+}
+.trend-card, .screenshot-item, .gallery-frame {
+  scroll-snap-align: start;
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAMES PAGE — filter bar specific
+══════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .filter-bar {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: .65rem;
+  }
+  .filter-bar .search-box { grid-column: 1 / 3; }
+  .filter-bar .filter-btn { grid-column: 1 / 3; display: flex; gap: .5rem; }
+  .filter-bar .filter-btn .btn { flex: 1; }
+  .sort-pills { overflow-x: auto; white-space: nowrap; flex-wrap: nowrap !important; padding-bottom: .4rem; scrollbar-width: none; }
+  .sort-pills::-webkit-scrollbar { display: none; }
+}
+
+@media (max-width: 480px) {
+  .filter-bar { grid-template-columns: 1fr; }
+  .filter-bar .search-box { grid-column: auto; }
+  .filter-bar .filter-btn { grid-column: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════
+   COMPATIBILITY PAGE — results table
+══════════════════════════════════════════════════════════ */
+@media (max-width: 600px) {
+  /* inline grid results */
+  div[style*="grid-template-columns: repeat(3"] {
+    grid-template-columns: 1fr !important;
+  }
+  div[style*="grid-template-columns: repeat(3,1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   GAME DETAIL — sticky sidebar on scroll
+══════════════════════════════════════════════════════════ */
+@media (min-width: 901px) {
+  .detail-grid > div:last-child { position: sticky; top: 80px; align-self: start; }
+}

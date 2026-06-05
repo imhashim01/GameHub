@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GameHub — Sign In</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- Animated Background — identical to register.html -->
+<div class="bg-scene">
+  <div class="bg-grid"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+</div>
+
+<div class="auth-wrapper auth-wrapper--narrow">
+  <div class="auth-card">
+    <div class="card-top-bar"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <!-- Logo — identical markup to register.html -->
+    <div class="logo-area">
+      <div class="logo-badge">🎮</div>
+      <a href="index.html" class="logo-text">GAME<em>HUB</em></a>
+      <span class="logo-sub">Smart Gaming Platform</span>
+    </div>
+
+    <div class="page-heading">WELCOME BACK, GAMER!</div>
+    <div class="page-desc">Sign in to continue your gaming journey</div>
+
+    <!-- Message boxes — same as register.html -->
+    <div id="auth-error"   class="msg-box msg-err"></div>
+    <div id="auth-success" class="msg-box msg-ok"></div>
+
+    <!-- Login / Email field -->
+    <div class="field">
+      <div class="flabel"><span>📧</span> Email or Username</div>
+      <div class="finput-wrap">
+        <input
+          class="finput"
+          type="text"
+          id="login"
+          placeholder="gamer@example.com"
+          autocomplete="username"
+        >
+      </div>
+    </div>
+
+    <!-- Password field -->
+    <div class="field">
+      <div class="flabel"><span>🔐</span> Password</div>
+      <div class="finput-wrap">
+        <input
+          class="finput finput--pwd"
+          type="password"
+          id="password"
+          placeholder="Enter your password"
+          autocomplete="current-password"
+        >
+        <button class="eye-toggle" type="button" onclick="togglePwd('password', this)">👁</button>
+      </div>
+    </div>
+
+    <!-- Remember / Forgot row -->
+    <div class="row-between" style="margin-bottom:1.4rem">
+      <label class="remember-lbl">
+        <input type="checkbox" id="remember"> Keep me signed in
+      </label>
+      <a href="#" class="forgot-link">Forgot password?</a>
+    </div>
+
+    <!-- CTA Button -->
+    <button class="cta-btn" id="login-btn" onclick="handleLogin()">
+      <span id="btn-text">🎮 SIGN IN</span>
+      <span id="btn-loader" style="display:none">⏳ SIGNING IN...</span>
+    </button>
+
+    <div class="div-line"><span>OR</span></div>
+
+    <div class="auth-footer">
+      Don't have an account? <a href="register.html">Join GameHub — It's Free! →</a>
+    </div>
+
+    <!-- Secure badges — login-specific trust row -->
+    <div class="secure-row">
+      <div class="secure-badge"><div class="secure-dot"></div> Secure Login</div>
+      <div class="secure-badge"><div class="secure-dot"></div> Data Encrypted</div>
+      <div class="secure-badge"><div class="secure-dot"></div> Free Forever</div>
+    </div>
+
+  </div><!-- /auth-card -->
+</div><!-- /auth-wrapper -->
+
+<script>
+  /* ── Redirect if already logged in ─────────────────── */
+  (async () => {
+    try {
+      const r = await fetch('php/session_check.php');
+      const d = await r.json();
+      if (d.logged_in) {
+        window.location.href = d.role === 'admin'
+          ? 'admin/admin_dashboard.php'
+          : 'dashboard.html';
+      }
+    } catch {}
+  })();
+
+  /* ── Toggle password visibility ─────────────────────── */
+  function togglePwd(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type  = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  /* ── Show error / success messages ──────────────────── */
+  function showErr(msg) {
+    const el = document.getElementById('auth-error');
+    el.textContent = '⚠ ' + msg;
+    el.classList.add('visible');
+    document.getElementById('auth-success').classList.remove('visible');
+  }
+
+  function showOk(msg) {
+    const el = document.getElementById('auth-success');
+    el.textContent = '✓ ' + msg;
+    el.classList.add('visible');
+    document.getElementById('auth-error').classList.remove('visible');
+  }
+
+  /* ── Loading state ───────────────────────────────────── */
+  function setLoad(on) {
+    document.getElementById('btn-text').style.display   = on ? 'none'   : 'inline';
+    document.getElementById('btn-loader').style.display = on ? 'inline' : 'none';
+    document.getElementById('login-btn').disabled       = on;
+  }
+
+  /* ── Main login handler ──────────────────────────────── */
+  async function handleLogin() {
+    document.getElementById('auth-error').classList.remove('visible');
+    document.getElementById('auth-success').classList.remove('visible');
+
+    const login    = document.getElementById('login').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (!login || !password) {
+      showErr('Please enter your email/username and password.');
+      return;
+    }
+
+    setLoad(true);
+
+    try {
+      const res  = await fetch('php/login.php', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ login, password })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        showOk(data.message || 'Login successful! Redirecting...');
+        setTimeout(() => {
+          window.location.href = (data.user && data.user.role === 'admin')
+            ? 'admin/admin_dashboard.php'
+            : (data.redirect || 'dashboard.html');
+        }, 1000);
+      } else {
+        showErr(data.message || 'Invalid credentials. Please try again.');
+        setLoad(false);
+      }
+    } catch {
+      showErr('Server unreachable. Please ensure XAMPP is running.');
+      setLoad(false);
+    }
+  }
+
+  /* ── Enter key submits ───────────────────────────────── */
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleLogin();
+  });
+</script>
+</body>
+</html>

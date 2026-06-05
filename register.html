@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join GameHub — Create Account</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/auth.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-scene">
+  <div class="bg-grid"></div>
+  <div class="orb orb-a"></div>
+  <div class="orb orb-b"></div>
+  <div class="orb orb-c"></div>
+</div>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+    <div class="card-top-bar"></div>
+    <div class="corner-tl"></div>
+    <div class="corner-br"></div>
+
+    <!-- Logo -->
+    <div class="logo-area">
+      <div class="logo-badge">🎮</div>
+      <a href="index.html" class="logo-text">GAME<em>HUB</em></a>
+      <span class="logo-sub">Smart Gaming Platform</span>
+    </div>
+
+    <div class="page-heading">CREATE YOUR ACCOUNT</div>
+    <div class="page-desc">Join gamers worldwide · <b>Free forever</b> · No card needed</div>
+
+    <div id="auth-error" class="msg-box msg-err"></div>
+    <div id="auth-success" class="msg-box msg-ok"></div>
+
+    <!-- Username -->
+    <div class="field">
+      <div class="flabel"><span>👤</span> Gamer Username</div>
+      <div class="finput-wrap">
+        <input class="finput" type="text" id="username" placeholder="Enter your username" maxlength="30" autocomplete="username">
+      </div>
+      <div class="fhint">3–30 chars · letters, numbers, underscores only</div>
+    </div>
+
+    <!-- Email -->
+    <div class="field">
+      <div class="flabel"><span>✉</span> Email Address</div>
+      <div class="finput-wrap">
+        <input class="finput" type="email" id="email" placeholder="gamer@example.com" autocomplete="email">
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div class="field">
+      <div class="flabel"><span>🔐</span> Create Password</div>
+      <div class="finput-wrap">
+        <input class="finput finput--pwd" type="password" id="password" placeholder="Minimum 6 characters" autocomplete="new-password">
+        <button class="eye-toggle" type="button" onclick="togglePwd('password',this)">👁</button>
+      </div>
+      <div class="str-row">
+        <div class="str-track"><div class="str-fill" id="strength-fill"></div></div>
+        <span class="str-lbl" id="strength-label">Strength</span>
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div class="field">
+      <div class="flabel"><span>🔐</span> Confirm Password</div>
+      <div class="finput-wrap">
+        <input class="finput finput--pwd" type="password" id="confirm_password" placeholder="Repeat your password" autocomplete="new-password">
+        <button class="eye-toggle" type="button" onclick="togglePwd('confirm_password',this)">👁</button>
+      </div>
+    </div>
+
+    <!-- Genres -->
+    <div class="field">
+      <div class="flabel">
+        <span>🎯</span> Favorite Genres
+        <span class="label-opt">(OPTIONAL)</span>
+      </div>
+      <div class="genre-row" id="genre-chips">
+        <button type="button" class="g-chip" data-genre="Action">⚔️ Action</button>
+        <button type="button" class="g-chip" data-genre="RPG">🧙 RPG</button>
+        <button type="button" class="g-chip" data-genre="FPS">🔫 FPS</button>
+        <button type="button" class="g-chip" data-genre="Strategy">♟️ Strategy</button>
+        <button type="button" class="g-chip" data-genre="Horror">👻 Horror</button>
+        <button type="button" class="g-chip" data-genre="Racing">🏎️ Racing</button>
+        <button type="button" class="g-chip" data-genre="Adventure">🗺️ Adventure</button>
+        <button type="button" class="g-chip" data-genre="Simulation">🏗️ Simulation</button>
+        <button type="button" class="g-chip" data-genre="Battle Royale">🎯 Battle Royale</button>
+        <button type="button" class="g-chip" data-genre="Fighting">🥊 Fighting</button>
+      </div>
+      <input type="hidden" id="favorite_genres">
+    </div>
+
+    <!-- CTA -->
+    <button class="cta-btn" id="register-btn" onclick="handleRegister()">
+      <span id="btn-text">CREATE MY ACCOUNT 🚀</span>
+      <span id="btn-loader" style="display:none">⏳ CREATING...</span>
+    </button>
+
+    <div class="div-line"><span>OR</span></div>
+
+    <div class="auth-footer">
+      Already a member? <a href="login.html">Sign In to your account →</a>
+    </div>
+
+    <!-- Trust stats -->
+    <div class="trust-row">
+      <div class="trust-item">
+        <div class="trust-num">10K+</div>
+        <div class="trust-lbl">Gamers</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">500+</div>
+        <div class="trust-lbl">Games</div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-num">FREE</div>
+        <div class="trust-lbl">Forever</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const selectedGenres = new Set();
+  document.querySelectorAll('.g-chip').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const g = btn.dataset.genre;
+      if (selectedGenres.has(g)) { selectedGenres.delete(g); btn.classList.remove('on'); }
+      else { selectedGenres.add(g); btn.classList.add('on'); }
+      document.getElementById('favorite_genres').value = [...selectedGenres].join(',');
+    });
+  });
+
+  function togglePwd(id, btn) {
+    const inp = document.getElementById(id);
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    btn.textContent = inp.type === 'password' ? '👁' : '🙈';
+  }
+
+  document.getElementById('password').addEventListener('input', function() {
+    const v = this.value;
+    const fill = document.getElementById('strength-fill');
+    const lbl  = document.getElementById('strength-label');
+    let s = 0;
+    if (v.length >= 6)  s++;
+    if (v.length >= 10) s++;
+    if (/[A-Z]/.test(v)) s++;
+    if (/[0-9]/.test(v)) s++;
+    if (/[^a-zA-Z0-9]/.test(v)) s++;
+    const lvls = ['','Weak','Fair','Good','Strong','Excellent'];
+    const clrs = ['','#ff006a','#ffd700','#00f5ff','#00ff88','#b400ff'];
+    fill.style.width = (s * 20) + '%';
+    fill.style.background = clrs[s] || '#333';
+    lbl.textContent = lvls[s] || '';
+    lbl.style.color = clrs[s] || '#2d4255';
+  });
+
+  async function handleRegister() {
+    const errEl = document.getElementById('auth-error');
+    const okEl  = document.getElementById('auth-success');
+    errEl.classList.remove('visible'); okEl.classList.remove('visible');
+
+    const username = document.getElementById('username').value.trim();
+    const email    = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+    const confirm  = document.getElementById('confirm_password').value;
+    const genres   = document.getElementById('favorite_genres').value;
+
+    if (!username || !email || !password || !confirm) { showErr('Please fill in all required fields.'); return; }
+    if (password !== confirm) { showErr('Passwords do not match.'); return; }
+    if (password.length < 6)  { showErr('Password must be at least 6 characters.'); return; }
+
+    setLoad(true);
+    try {
+      const res  = await fetch('php/register.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, email, password, confirm_password: confirm, favorite_genres: genres })
+      });
+      const data = await res.json();
+      if (data.success) {
+        okEl.textContent = '✓ ' + (data.message || 'Account created! Redirecting to login...');
+        okEl.classList.add('visible');
+        setTimeout(() => window.location.href = data.redirect || 'login.html', 1200);
+      } else {
+        showErr(data.message || 'Registration failed.');
+      }
+    } catch { showErr('Server unreachable. Ensure XAMPP is running.'); }
+    setLoad(false);
+  }
+
+  function showErr(msg) {
+    const el = document.getElementById('auth-error');
+    el.textContent = '⚠ ' + msg;
+    el.classList.add('visible');
+  }
+
+  function setLoad(on) {
+    document.getElementById('btn-text').style.display   = on ? 'none'   : 'inline';
+    document.getElementById('btn-loader').style.display = on ? 'inline' : 'none';
+    document.getElementById('register-btn').disabled    = on;
+  }
+
+  document.addEventListener('keydown', e => { if (e.key === 'Enter') handleRegister(); });
+</script>
+</body>
+</html>
